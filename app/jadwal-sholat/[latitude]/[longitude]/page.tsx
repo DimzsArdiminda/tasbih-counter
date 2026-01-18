@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Loader2, ArrowLeft, Calendar, MapPin } from "lucide-react";
 import Link from "next/link";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface PrayerTime {
   id: string;
@@ -39,6 +40,7 @@ interface PrayerData {
 }
 
 export default function JadwalSholatDetail() {
+  const { isDark } = useTheme();
   const params = useParams();
   const router = useRouter();
   const [prayerData, setPrayerData] = useState<PrayerData | null>(null);
@@ -63,9 +65,19 @@ export default function JadwalSholatDetail() {
       if (!response.ok) throw new Error("Gagal mengambil data jadwal sholat");
       const data = await response.json();
       setPrayerData(data);
-      // Set today as default
+
+      // Set today as default, or first available date if today is not in the list
       const today = new Date().toISOString().split("T")[0];
-      setSelectedDate(today);
+      const todayExists = data.prayers.some(
+        (p: PrayerTime) => p.date === today,
+      );
+
+      if (todayExists) {
+        setSelectedDate(today);
+      } else if (data.prayers.length > 0) {
+        // If today's date is not available, use the first date in the list
+        setSelectedDate(data.prayers[0].date);
+      }
     } catch (err) {
       setError("Gagal mengambil data jadwal sholat");
       console.error(err);
@@ -79,7 +91,9 @@ export default function JadwalSholatDetail() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="flex flex-col items-center gap-4">
           <Loader2 size={40} className="animate-spin text-blue-600" />
-          <p className="text-gray-600">Memuat jadwal sholat...</p>
+          <p className={`${isDark ? "text-gray-400" : "text-gray-600"}`}>
+            Memuat jadwal sholat...
+          </p>
         </div>
       </div>
     );
@@ -135,7 +149,9 @@ export default function JadwalSholatDetail() {
 
       {/* Date Selector */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label
+          className={`block text-sm font-medium ${isDark ? "text-gray-300" : "text-gray-700"} mb-2`}
+        >
           Pilih Tanggal
         </label>
         <div className="relative">
@@ -146,7 +162,11 @@ export default function JadwalSholatDetail() {
           <select
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white appearance-none cursor-pointer"
+            className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer ${
+              isDark
+                ? "bg-gray-800 border-gray-700 text-white"
+                : "bg-white border-gray-300 text-gray-900"
+            }`}
           >
             {prayerData.prayers.map((prayer) => (
               <option key={prayer.id} value={prayer.date}>
@@ -164,72 +184,124 @@ export default function JadwalSholatDetail() {
 
       {/* Prayer Times */}
       {selectedPrayer && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+        <div
+          className={`${isDark ? "bg-gray-800" : "bg-white"} rounded-xl shadow-sm p-6`}
+        >
+          <h2
+            className={`text-xl font-bold ${isDark ? "text-white" : "text-gray-900"} mb-6`}
+          >
             Jadwal Sholat
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            <div
+              className={`text-center p-4 rounded-lg ${isDark ? "bg-blue-900/20" : "bg-blue-50"}`}
+            >
+              <p
+                className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"} mb-2`}
+              >
                 Subuh
               </p>
-              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+              <p
+                className={`text-2xl font-bold ${isDark ? "text-blue-400" : "text-blue-600"}`}
+              >
                 {selectedPrayer.time.subuh}
               </p>
             </div>
-            <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            <div
+              className={`text-center p-4 rounded-lg ${isDark ? "bg-blue-900/20" : "bg-blue-50"}`}
+            >
+              <p
+                className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"} mb-2`}
+              >
                 Dzuhur
               </p>
-              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+              <p
+                className={`text-2xl font-bold ${isDark ? "text-blue-400" : "text-blue-600"}`}
+              >
                 {selectedPrayer.time.dzuhur}
               </p>
             </div>
-            <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            <div
+              className={`text-center p-4 rounded-lg ${isDark ? "bg-blue-900/20" : "bg-blue-50"}`}
+            >
+              <p
+                className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"} mb-2`}
+              >
                 Ashar
               </p>
-              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+              <p
+                className={`text-2xl font-bold ${isDark ? "text-blue-400" : "text-blue-600"}`}
+              >
                 {selectedPrayer.time.ashar}
               </p>
             </div>
-            <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            <div
+              className={`text-center p-4 rounded-lg ${isDark ? "bg-blue-900/20" : "bg-blue-50"}`}
+            >
+              <p
+                className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"} mb-2`}
+              >
                 Maghrib
               </p>
-              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+              <p
+                className={`text-2xl font-bold ${isDark ? "text-blue-400" : "text-blue-600"}`}
+              >
                 {selectedPrayer.time.maghrib}
               </p>
             </div>
-            <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            <div
+              className={`text-center p-4 rounded-lg ${isDark ? "bg-blue-900/20" : "bg-blue-50"}`}
+            >
+              <p
+                className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"} mb-2`}
+              >
                 Isya
               </p>
-              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+              <p
+                className={`text-2xl font-bold ${isDark ? "text-blue-400" : "text-blue-600"}`}
+              >
                 {selectedPrayer.time.isya}
               </p>
             </div>
-            <div className="text-center p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            <div
+              className={`text-center p-4 rounded-lg ${isDark ? "bg-gray-700" : "bg-gray-100"}`}
+            >
+              <p
+                className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"} mb-2`}
+              >
                 Imsak
               </p>
-              <p className="text-2xl font-bold text-gray-700 dark:text-gray-300">
+              <p
+                className={`text-2xl font-bold ${isDark ? "text-gray-300" : "text-gray-700"}`}
+              >
                 {selectedPrayer.time.imsak}
               </p>
             </div>
-            <div className="text-center p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            <div
+              className={`text-center p-4 rounded-lg ${isDark ? "bg-gray-700" : "bg-gray-100"}`}
+            >
+              <p
+                className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"} mb-2`}
+              >
                 Terbit
               </p>
-              <p className="text-2xl font-bold text-gray-700 dark:text-gray-300">
+              <p
+                className={`text-2xl font-bold ${isDark ? "text-gray-300" : "text-gray-700"}`}
+              >
                 {selectedPrayer.time.terbit}
               </p>
             </div>
-            <div className="text-center p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            <div
+              className={`text-center p-4 rounded-lg ${isDark ? "bg-gray-700" : "bg-gray-100"}`}
+            >
+              <p
+                className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"} mb-2`}
+              >
                 Dhuha
               </p>
-              <p className="text-2xl font-bold text-gray-700 dark:text-gray-300">
+              <p
+                className={`text-2xl font-bold ${isDark ? "text-gray-300" : "text-gray-700"}`}
+              >
                 {selectedPrayer.time.dhuha}
               </p>
             </div>

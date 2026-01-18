@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Loader2, MapPin, ChevronRight } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface City {
   id: string;
@@ -23,6 +24,7 @@ interface Province {
 }
 
 export default function JadwalSholat() {
+  const { isDark } = useTheme();
   const [provinces, setProvinces] = useState<Province[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
@@ -82,10 +84,12 @@ export default function JadwalSholat() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+        <h1
+          className={`text-3xl font-bold ${isDark ? "text-white" : "text-gray-900"} mb-2`}
+        >
           Jadwal Sholat
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className={`${isDark ? "text-gray-400" : "text-gray-600"}`}>
           Pilih kota untuk melihat jadwal sholat
         </p>
       </div>
@@ -97,7 +101,7 @@ export default function JadwalSholat() {
           placeholder="Cari provinsi atau kota..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+          className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${isDark ? "bg-gray-800 border-gray-700 text-white" : "bg-white border-gray-300 text-gray-900"}`}
         />
       </div>
 
@@ -106,9 +110,11 @@ export default function JadwalSholat() {
         {filteredProvinces.map((province) => (
           <div
             key={province.id}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
+            className={`${isDark ? "bg-gray-800" : "bg-white"} rounded-xl shadow-sm p-6`}
           >
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2
+              className={`text-xl font-bold ${isDark ? "text-white" : "text-gray-900"} mb-4`}
+            >
               {province.name}
             </h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -116,7 +122,11 @@ export default function JadwalSholat() {
                 <Link
                   key={city.id}
                   href={`/jadwal-sholat/${city.coordinate.latitude}/${city.coordinate.longitude}`}
-                  className="flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group"
+                  className={`flex items-center justify-between p-4 rounded-lg border transition-all group ${
+                    isDark
+                      ? "border-gray-700 hover:border-blue-500 hover:bg-blue-900/20"
+                      : "border-gray-200 hover:border-blue-500 hover:bg-blue-50"
+                  }`}
                 >
                   <div className="flex items-center gap-3">
                     <MapPin
@@ -124,10 +134,14 @@ export default function JadwalSholat() {
                       className="text-gray-400 group-hover:text-blue-600"
                     />
                     <div>
-                      <p className="font-medium text-gray-900 dark:text-white">
+                      <p
+                        className={`font-medium ${isDark ? "text-white" : "text-gray-900"}`}
+                      >
                         {city.name}
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p
+                        className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}
+                      >
                         {city.coordinate.latitude.toFixed(4)},{" "}
                         {city.coordinate.longitude.toFixed(4)}
                       </p>
@@ -146,7 +160,7 @@ export default function JadwalSholat() {
 
       {filteredProvinces.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className={`${isDark ? "text-gray-400" : "text-gray-500"}`}>
             Tidak ada hasil yang ditemukan
           </p>
         </div>
