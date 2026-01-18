@@ -1,29 +1,65 @@
-# 🕌 Do-Dzikir - Platform Digital Ibadah Muslim
+# 🕌 Do'a Dzikit - Tasbih Online & Dzikir Digital Gratis
 
-Platform web modern untuk membantu umat Muslim dalam menjalankan ibadah sehari-hari dengan fitur jadwal sholat akurat dan tasbih digital.
+Platform web modern untuk membantu umat Muslim dalam menjalankan ibadah sehari-hari dengan fitur **tasbih online gratis**, **dzikir digital**, dan **jadwal sholat Indonesia** yang akurat.
+
+[![SEO Optimized](https://img.shields.io/badge/SEO-Optimized-green)](https://do-dzikir.vercel.app)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
 
 ## 🌟 Fitur Utama
 
-### 1. **Jadwal Sholat Otomatis**
+### 1. **Tasbih Online - Counter Dzikir Digital** ✨
+
+- 🎯 Counter dzikir otomatis untuk Subhanallah, Alhamdulillah, Allahu Akbar
+- 📊 Target dzikir yang bisa disesuaikan (33, 99, 100, 1000, custom)
+- 📝 Custom dzikir - tambahkan dzikir sendiri
+- 📈 History dan tracking dzikir harian
+- 🔊 Sound feedback & vibration
+- 💾 Auto-save progress di browser
+- 🌙 Dark mode support
+
+### 2. **Jadwal Sholat Indonesia**
 
 - 📍 Deteksi lokasi otomatis menggunakan geolokasi browser
 - 🗺️ Pencarian kota manual berdasarkan provinsi di Indonesia
-- ⏰ Waktu sholat akurat untuk seluruh Indonesia
+- ⏰ Waktu sholat akurat untuk seluruh Indonesia (Subuh, Dzuhur, Ashar, Maghrib, Isya)
 - 📱 Tampilan responsif untuk semua perangkat
+- 🔔 Notifikasi waktu sholat
 
-### 2. **Pencarian Lokasi**
+### 3. **Pencarian Lokasi**
 
 - 🔍 Pencarian real-time provinsi dan kota
 - 🎯 Sistem pencarian kota terdekat berdasarkan koordinat
 - 📊 Data lengkap untuk seluruh provinsi dan kota di Indonesia
 
-### 3. **Tasbih Digital** (Coming Soon)
+### 4. **SEO Optimization** 🚀
 
-- Fitur tasbih digital untuk membantu dzikir
+- ✅ Structured data (JSON-LD) untuk rich snippets
+- ✅ Meta tags lengkap untuk SEO
+- ✅ Open Graph & Twitter Cards
+- ✅ Sitemap.xml otomatis
+- ✅ Robots.txt optimization
+- ✅ PWA ready dengan manifest.json
+- ✅ Mobile-first & responsive design
 
-### 4. **Al-Quran Digital** (Coming Soon)
+## 🎯 Keywords yang Ditarget
 
-- Akses Al-Quran lengkap dengan terjemahan dan tafsir
+Aplikasi ini dioptimasi untuk muncul di pencarian Google dengan keywords:
+
+- **Tasbih online** - Counter tasbih digital gratis
+- **Dzikir online** - Aplikasi dzikir digital
+- **Jadwal sholat** - Waktu sholat Indonesia hari ini
+- **Counter tasbih** - Tasbih digital otomatis
+- **Aplikasi dzikir** - Tools Muslim online
+
+## 📊 SEO Features
+
+- 🔍 **Schema Markup**: Structured data untuk better search results
+- 📱 **PWA**: Progressive Web App dengan offline capability
+- ⚡ **Fast Loading**: Optimized dengan Next.js 16
+- 🎨 **Rich Snippets**: Enhanced search results
+- 🌐 **Multi-language**: Indonesian language optimization
+- 📈 **Analytics Ready**: Google Analytics & Search Console compatible
 
 ## 🚀 Teknologi yang Digunakan
 
