@@ -1,8 +1,8 @@
 "use client";
 
 import { Geist, Geist_Mono } from "next/font/google";
-import { ThemeProvider } from "@/contexts/ThemeContext";
-import "./globals.css";
+import { useTheme } from "@/contexts/ThemeContext";
+import "../globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,13 +19,5 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ThemeProvider>{children}</ThemeProvider>
-      </body>
-    </html>
-  );
+  return <div>{children}</div>;
 }

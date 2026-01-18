@@ -21,7 +21,7 @@ export default function Header({
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo & Mobile Menu Button */}
+          {/* Do-Dzikir & Mobile Menu Button */}
           <div className="flex items-center gap-4">
             <button
               onClick={toggleSidebar}
@@ -38,7 +38,7 @@ export default function Header({
               <span
                 className={`font-bold text-xl ${isDark ? "text-white" : "text-gray-900"}`}
               >
-                Logo
+                Do-Dzikir
               </span>
             </div>
           </div>

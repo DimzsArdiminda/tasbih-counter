@@ -1,4 +1,4 @@
-# 🕌 Do-Dzikit - Platform Digital Ibadah Muslim
+# 🕌 Do-Dzikir - Platform Digital Ibadah Muslim
 
 Platform web modern untuk membantu umat Muslim dalam menjalankan ibadah sehari-hari dengan fitur jadwal sholat akurat dan tasbih digital.
 
@@ -46,7 +46,7 @@ Pastikan Anda telah menginstal:
 
 ```bash
 git clone <repository-url>
-cd do-dzikit
+cd do-Dzikir
 ```
 
 2. **Install dependencies**
@@ -75,7 +75,7 @@ pnpm dev
 ## 📁 Struktur Proyek
 
 ```
-do-dzikit/
+do-Dzikir/
 ├── app/                          # Next.js App Router
 │   ├── api/                      # API Routes
 │   │   ├── cities/              # Endpoint data kota

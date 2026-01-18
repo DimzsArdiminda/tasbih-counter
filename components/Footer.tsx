@@ -20,7 +20,7 @@ export default function Footer({ isDark }: FooterProps) {
               <span
                 className={`font-bold text-xl ${isDark ? "text-white" : "text-gray-900"}`}
               >
-                Logo
+                Do-Dzikir
               </span>
             </div>
             <p className={`${isDark ? "text-gray-400" : "text-gray-600"}`}>
@@ -138,7 +138,7 @@ export default function Footer({ isDark }: FooterProps) {
           <p
             className={`text-center ${isDark ? "text-gray-400" : "text-gray-600"}`}
           >
-            © 2024 Logo. All rights reserved.
+            © 2024 Do-Dzikir. All rights reserved.
           </p>
         </div>
       </div>
