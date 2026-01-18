@@ -13,8 +13,7 @@ export default function LandingPageLayout() {
     <>
       <Hero isDark={isDark} />
       <Features isDark={isDark} />
-      <CTASection isDark={isDark} />
-      {/* <Footer isDark={isDark} /> */}
+      {/* <CTASection isDark={isDark} /> */}
     </>
   );
 }
