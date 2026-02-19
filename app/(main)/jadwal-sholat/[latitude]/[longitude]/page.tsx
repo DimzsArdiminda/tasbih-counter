@@ -88,7 +88,7 @@ export default function JadwalSholatDetail() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center min-h-400">
         <div className="flex flex-col items-center gap-4">
           <Loader2 size={40} className="animate-spin text-blue-600" />
           <p className={`${isDark ? "text-gray-400" : "text-gray-600"}`}>
@@ -131,7 +131,7 @@ export default function JadwalSholatDetail() {
         Kembali
       </Link>
 
-      <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl p-6 mb-6 text-white">
+      <div className="bg-linear-to-r from-blue-500 to-purple-500 rounded-xl p-6 mb-6 text-white">
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-3xl font-bold mb-2">{prayerData.name}</h1>
