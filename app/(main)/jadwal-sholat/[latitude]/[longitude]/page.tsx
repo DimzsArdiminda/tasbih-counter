@@ -161,7 +161,7 @@ export default function JadwalSholatDetail() {
           />
           <select
             value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
+            onChange={(e) => setSelectedDate(Date.now() > new Date(e.target.value).getTime() ? e.target.value : selectedDate)}
             className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer ${
               isDark
                 ? "bg-gray-800 border-gray-700 text-white"

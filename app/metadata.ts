@@ -1,11 +1,11 @@
 import { Metadata } from "next";
 
 export const siteConfig = {
-  name: "Do'a Dzikit",
+  name: "Do'a Dzikir",
   description:
     "Tasbih Online & Dzikir Digital Gratis - Aplikasi dzikir online, tasbih digital, jadwal sholat Indonesia, dan panduan doa harian. Tingkatkan ibadah Anda dengan tools islami modern.",
-  url: "https://do-dzikit.vercel.app", // Ganti dengan domain Anda
-  ogImage: "https://do-dzikit.vercel.app/og-image.png", // Buat image ini nanti
+  url: "https://do-dzikir.vercel.app", // Ganti dengan domain Anda
+  ogImage: "https://do-dzikir.vercel.app/og-image.png", // Buat image ini nanti
   keywords: [
     "tasbih online",
     "dzikir online",
@@ -42,9 +42,9 @@ export const defaultMetadata: Metadata = {
   },
   description: siteConfig.description,
   keywords: siteConfig.keywords,
-  authors: [{ name: "Do'a Dzikit" }],
-  creator: "Do'a Dzikit",
-  publisher: "Do'a Dzikit",
+  authors: [{ name: "Do'a Dzikir" }],
+  creator: "Do'a Dzikir",
+  publisher: "Do'a Dzikir",
   formatDetection: {
     email: false,
     address: false,
@@ -62,7 +62,7 @@ export const defaultMetadata: Metadata = {
         url: siteConfig.ogImage,
         width: 1200,
         height: 630,
-        alt: "Do'a Dzikit - Tasbih Online & Dzikir Digital",
+        alt: "Do'a Dzikir - Tasbih Online & Dzikir Digital",
       },
     ],
   },
@@ -71,7 +71,7 @@ export const defaultMetadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     images: [siteConfig.ogImage],
-    creator: "@doadzikit", // Ganti dengan Twitter handle Anda
+    creator: "@doadzikir", // Ganti dengan Twitter handle Anda
   },
   robots: {
     index: true,
