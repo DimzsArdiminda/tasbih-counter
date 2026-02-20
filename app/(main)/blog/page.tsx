@@ -51,8 +51,8 @@ export default function BlogPage() {
     <div
       className={`min-h-screen ${
         isDark
-          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
-          : "bg-gradient-to-br from-blue-50 via-white to-green-50"
+          ? "bg-linear-to-br from-gray-900 via-gray-800 to-gray-900"
+          : "bg-linear-to-br from-blue-50 via-white to-green-50"
       }`}
     >
       <div className="container mx-auto px-4 py-12 max-w-6xl">

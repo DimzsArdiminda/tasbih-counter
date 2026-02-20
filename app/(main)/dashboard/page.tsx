@@ -3,10 +3,9 @@
 import React from "react";
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
-import CTASection from "@/components/CTASection";
 import { useTheme } from "@/contexts/ThemeContext";
 
-export default function LandingPageLayout() {
+export default function Dashboard() {
   const { isDark } = useTheme();
 
   return (

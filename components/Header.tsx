@@ -1,6 +1,9 @@
 "use client";
 
 import { Moon, Sun, Menu, X } from "lucide-react";
+import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
 
 interface HeaderProps {
   isDark: boolean;
@@ -15,6 +18,18 @@ export default function Header({
   toggleTheme,
   toggleSidebar,
 }: HeaderProps) {
+  const Router = useRouter();
+
+  const handleLogout = async () => {
+    await signOut({
+      callbackUrl: "/auth/login",
+    });
+
+
+    Router.push("/auth/login");
+  }
+
+
   return (
     <header
       className={`sticky top-0 z-50 ${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"} border-b transition-colors`}
@@ -85,9 +100,10 @@ export default function Header({
               )}
             </button>
             <button
-              className={`hidden sm:block px-4 py-2 rounded-lg ${isDark ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"} text-white font-medium transition-colors`}
+              className={`hidden sm:block px-4 py-2 rounded-lg ${isDark ? "bg-red-600 hover:bg-red-700" : "bg-red-500 hover:bg-red-600"} text-white font-medium transition-colors`}
+              onClick={handleLogout}
             >
-              Mulai
+              Logout
             </button>
           </div>
         </div>

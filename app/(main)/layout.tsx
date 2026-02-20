@@ -4,6 +4,7 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import { useTheme } from "@/contexts/ThemeContext";
+import Providers from "../session";
 
 export default function MainLayout({
   children,
@@ -15,27 +16,29 @@ export default function MainLayout({
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   return (
-    <div
-      className={`min-h-screen ${isDark ? "dark bg-gray-900" : "bg-gray-50"}`}
-    >
-      <Header
-        isDark={isDark}
-        sidebarOpen={sidebarOpen}
-        toggleTheme={toggleTheme}
-        toggleSidebar={toggleSidebar}
-      />
-
-      <div className="flex">
-        <Sidebar
+    <Providers>
+      <div
+        className={`min-h-screen ${isDark ? "dark bg-gray-900" : "bg-gray-50"}`}
+      >
+        <Header
           isDark={isDark}
           sidebarOpen={sidebarOpen}
+          toggleTheme={toggleTheme}
           toggleSidebar={toggleSidebar}
         />
 
-        <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 lg:ml-64">
-          {children}
-        </main>
+        <div className="flex">
+          <Sidebar
+            isDark={isDark}
+            sidebarOpen={sidebarOpen}
+            toggleSidebar={toggleSidebar}
+          />
+
+          <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 lg:ml-64">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </Providers>
   );
 }
