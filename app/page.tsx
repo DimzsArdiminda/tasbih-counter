@@ -105,6 +105,14 @@ export default function LandingPage() {
             >
               Blog
             </Link>
+            <Link
+              href="/auth/login"
+              className={`hover:text-blue-500 transition ${
+                isDark ? "text-gray-300" : "text-gray-700"
+              }`}
+            >
+              Login
+            </Link>
           </nav>
 
           <button

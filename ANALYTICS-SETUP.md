@@ -11,7 +11,7 @@
 2. **Tambah Property**
    - Klik "Add Property"
    - Pilih "URL prefix"
-   - Masukkan URL website: `https://do-dzikit.vercel.app`
+   - Masukkan URL website: `https://do-dzikir.vercel.app`
 
 3. **Verifikasi Ownership**
    - Pilih metode "HTML tag"
@@ -119,7 +119,7 @@
 
 1. **PageSpeed Insights**
    - https://pagespeed.web.dev/
-   - Test URL: `https://do-dzikit.vercel.app`
+   - Test URL: `https://do-dzikir.vercel.app`
    - Target: Score 90+ untuk mobile & desktop
 
 2. **Lighthouse**
