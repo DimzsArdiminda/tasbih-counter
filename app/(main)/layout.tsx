@@ -4,7 +4,6 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import { useTheme } from "@/contexts/ThemeContext";
-import Providers from "../session";
 
 export default function MainLayout({
   children,
@@ -16,7 +15,6 @@ export default function MainLayout({
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   return (
-    <Providers>
       <div
         className={`min-h-screen ${isDark ? "dark bg-gray-900" : "bg-gray-50"}`}
       >
@@ -39,6 +37,5 @@ export default function MainLayout({
           </main>
         </div>
       </div>
-    </Providers>
   );
 }

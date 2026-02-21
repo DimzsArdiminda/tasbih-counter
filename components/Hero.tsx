@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MapPin, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 interface HeroProps {
   isDark: boolean;
@@ -40,6 +41,7 @@ interface City {
 }
 
 export default function Hero({ isDark }: HeroProps) {
+  const { data: session } = useSession();
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
     null,
   );
@@ -175,7 +177,7 @@ export default function Hero({ isDark }: HeroProps) {
       className={`rounded-xl p-8 sm:p-12 mb-8 ${isDark ? "bg-gradient-to-r from-blue-900 to-purple-900" : "bg-gradient-to-r from-blue-500 to-purple-500"}`}
     >
       <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-        Assalamualaikum, 👋
+        Assalamualaikum{session?.user?.name ? `, ${session.user.name}` : ""} 👋
       </h1>
       <p className="text-lg sm:text-xl text-blue-100 mb-6 max-w-2xl">
         Selamat datang di Do-Dzikir! Dapatkan beragam kebutuhan rohani kamu di
