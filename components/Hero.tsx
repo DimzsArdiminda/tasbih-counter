@@ -174,7 +174,7 @@ export default function Hero({ isDark }: HeroProps) {
 
   return (
     <section
-      className={`rounded-xl p-8 sm:p-12 mb-8 ${isDark ? "bg-gradient-to-r from-blue-900 to-purple-900" : "bg-gradient-to-r from-blue-500 to-purple-500"}`}
+      className={`rounded-xl p-8 sm:p-12 mb-8 ${isDark ? "bg-linear-to-r from-blue-900 to-purple-900" : "bg-linear-to-r from-blue-500 to-purple-500"}`}
     >
       <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
         Assalamualaikum{session?.user?.name ? `, ${session.user.name}` : ""} 👋
