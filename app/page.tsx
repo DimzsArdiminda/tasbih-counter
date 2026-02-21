@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useTheme } from "@/contexts/ThemeContext";
 import {
   Moon,
   Sun,
@@ -23,30 +23,7 @@ import {
 } from "lucide-react";
 
 export default function LandingPage() {
-  const [isDark, setIsDark] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    const initTheme = () => {
-      const darkMode = localStorage.getItem("darkMode") === "true";
-      setIsDark(darkMode);
-      if (darkMode) {
-        document.documentElement.classList.add("dark");
-      }
-      setMounted(true);
-    };
-
-    initTheme();
-  }, []);
-
-  const toggleDarkMode = () => {
-    const newMode = !isDark;
-    setIsDark(newMode);
-    localStorage.setItem("darkMode", String(newMode));
-    document.documentElement.classList.toggle("dark");
-  };
-
-  if (!mounted) return null;
+  const { isDark, toggleTheme } = useTheme();
 
   return (
     <div
@@ -131,7 +108,7 @@ export default function LandingPage() {
           </nav>
 
           <button
-            onClick={toggleDarkMode}
+            onClick={toggleTheme}
             className={`p-2 rounded-lg ${
               isDark
                 ? "bg-gray-700 hover:bg-gray-600"

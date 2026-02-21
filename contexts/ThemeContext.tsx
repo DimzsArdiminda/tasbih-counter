@@ -16,24 +16,25 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [isDark, setIsDark] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  // Load theme dari localStorage saat pertama kali mount
-  useEffect(() => {
-    setMounted(true);
+  // Lazy initialization - only runs once on mount
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window === "undefined") return false;
     const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") {
-      setIsDark(true);
-    }
-  }, []);
+    return savedTheme === "dark";
+  });
 
-  // Simpan theme ke localStorage setiap kali berubah
+  // Apply theme class and save to localStorage when theme changes
   useEffect(() => {
-    if (mounted) {
-      localStorage.setItem("theme", isDark ? "dark" : "light");
+    if (typeof window === "undefined") return;
+
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
     }
-  }, [isDark, mounted]);
+
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  }, [isDark]);
 
   const toggleTheme = () => setIsDark(!isDark);
 
