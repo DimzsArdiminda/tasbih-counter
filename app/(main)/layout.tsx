@@ -13,7 +13,7 @@ export default function MainLayout({
   const { isDark, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-
+  
   return (
       <div
         className={`min-h-screen ${isDark ? "dark bg-gray-900" : "bg-gray-50"}`}

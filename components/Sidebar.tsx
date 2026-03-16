@@ -1,6 +1,7 @@
 "use client";
 
 import { Home, Book, Clock, Sparkles } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
 interface SidebarProps {
@@ -12,7 +13,7 @@ interface SidebarProps {
 const linkSidebar = [
   {
     title: "Dashboard",
-    link: "/",
+    link: "/dashboard",
     icon: Home,
   },
   {
@@ -39,6 +40,7 @@ export default function Sidebar({
   toggleSidebar,
 }: SidebarProps) {
   const pathname = usePathname();
+  const { status } = useSession();
 
   return (
     <>
@@ -46,7 +48,7 @@ export default function Sidebar({
         className={`
           fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 
           ${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"} 
-          border-r transition-all duration-300 z-40
+          border-r transition-all duration-300 z-40 flex flex-col
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
         `}
       >
@@ -54,6 +56,10 @@ export default function Sidebar({
           {linkSidebar.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.link;
+
+            if (item.link === "/dashboard" && status !== "authenticated") {
+              return null;
+            }
 
             return (
               <a
@@ -79,25 +85,21 @@ export default function Sidebar({
         </nav>
 
         {/* Sidebar Footer Card */}
-        {/* <div
-          className={`m-4 p-4 rounded-lg ${isDark ? "bg-gray-700" : "bg-blue-50"}`}
+        <div
+          className={`mt-auto m-4 p-4 rounded-lg ${isDark ? "bg-gray-700" : "bg-blue-50"}`}
         >
           <h3
             className={`font-semibold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}
           >
-            Butuh Bantuan?
+            Ada saran?
           </h3>
-          <p
-            className={`text-sm mb-3 ${isDark ? "text-gray-300" : "text-gray-600"}`}
-          >
-            Hubungi tim support kami
-          </p>
+
           <button
             className={`w-full px-4 py-2 rounded-lg ${isDark ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"} text-white text-sm font-medium transition-colors`}
           >
-            Hubungi Kami
+            <a href="mailto:dimasardiminda@gmail.com">Hubungi disini</a>
           </button>
-        </div> */}
+        </div>
       </aside>
 
       {/* Overlay untuk mobile */}

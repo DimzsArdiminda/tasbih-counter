@@ -33,7 +33,7 @@ export default function RootLayout({
               name: "Do'a Dzikit",
               description:
                 "Aplikasi tasbih online dan dzikir digital gratis untuk umat muslim. Hitung dzikir, lihat jadwal sholat, dan tingkatkan ibadah harian Anda.",
-              url: "https://do-dzikit.vercel.app",
+              url: "https://do-dzikir.vercel.app",
               applicationCategory: "LifestyleApplication",
               operatingSystem: "Any",
               offers: {

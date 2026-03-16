@@ -61,10 +61,10 @@ export default function Header({
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-6">
             <a
-              href="#"
+              href="/dashboard"
               className={`${isDark ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"} transition-colors`}
             >
-              Beranda
+              Dashboard
             </a>
             <a
               href="#"
