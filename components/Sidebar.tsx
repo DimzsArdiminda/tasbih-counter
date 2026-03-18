@@ -94,11 +94,13 @@ export default function Sidebar({
             Ada saran?
           </h3>
 
-          <button
-            className={`w-full px-4 py-2 rounded-lg ${isDark ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"} text-white text-sm font-medium transition-colors`}
-          >
-            <a href="mailto:dimasardiminda@gmail.com">Hubungi disini</a>
-          </button>
+            <a
+              className={`w-full px-4 py-2 rounded-lg ${isDark ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"} text-white text-sm font-medium transition-colors`}
+              href="mailto:dimasardiminda@gmail.com"
+            >
+              Hubungi disini
+            </a>
+          
         </div>
       </aside>
 

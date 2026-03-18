@@ -13,7 +13,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const Router = useRouter();
@@ -201,7 +200,7 @@ export default function LoginPage() {
       >
         Belum punya akun?{" "}
         <a
-          href="#"
+          href="/auth/register"
           className={`font-medium ${isDark ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-700"} transition-colors`}
         >
           Daftar sekarang

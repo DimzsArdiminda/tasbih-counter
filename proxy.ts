@@ -12,6 +12,6 @@ export default withAuth({
 export const config = {
   matcher: [
     "/dashboard/:path*",
-    "/tasbih/:path*"
+    // "/tasbih/:path*"
   ],
 };

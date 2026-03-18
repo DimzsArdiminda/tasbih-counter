@@ -1,9 +1,9 @@
 "use client";
 
 import { Moon, Sun, Menu, X } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-
+import Link from "next/link";
 
 interface HeaderProps {
   isDark: boolean;
@@ -19,6 +19,7 @@ export default function Header({
   toggleSidebar,
 }: HeaderProps) {
   const Router = useRouter();
+  const { status } = useSession();
 
   const handleLogout = async () => {
     await signOut({
@@ -60,12 +61,22 @@ export default function Header({
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            <a
-              href="/dashboard"
-              className={`${isDark ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"} transition-colors`}
-            >
-              Dashboard
-            </a>
+            {status === "authenticated" ? (
+              <a
+                href="/dashboard"
+                className={`${isDark ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"} transition-colors`}
+              >
+                Dashboard
+              </a>
+            ) : (
+              
+              <Link
+                href="/"
+                className={`${isDark ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"} transition-colors`}
+              >
+                Home
+              </Link>
+            )}
             <a
               href="#"
               className={`${isDark ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"} transition-colors`}
@@ -100,10 +111,10 @@ export default function Header({
               )}
             </button>
             <button
-              className={`hidden sm:block px-4 py-2 rounded-lg ${isDark ? "bg-red-600 hover:bg-red-700" : "bg-red-500 hover:bg-red-600"} text-white font-medium transition-colors`}
+              className={`hidden sm:block px-4 py-2 rounded-lg ${status === "authenticated" ? (isDark ? "bg-red-600 hover:bg-red-700" : "bg-red-500 hover:bg-red-600") : isDark ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"} text-white font-medium transition-colors`}
               onClick={handleLogout}
             >
-              Logout
+              {status === "authenticated" ? "Logout" : "Login"}
             </button>
           </div>
         </div>

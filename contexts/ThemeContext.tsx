@@ -16,16 +16,21 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // Lazy initialization - only runs once on mount
-  const [isDark, setIsDark] = useState(() => {
-    if (typeof window === "undefined") return false;
+  const [isDark, setIsDark] = useState(false);
+  const [isThemeReady, setIsThemeReady] = useState(false);
+
+  // Load saved theme after mount to keep server/client initial render consistent.
+  useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
-    return savedTheme === "dark";
-  });
+    if (savedTheme === "dark") {
+      setIsDark(true);
+    }
+    setIsThemeReady(true);
+  }, []);
 
   // Apply theme class and save to localStorage when theme changes
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (!isThemeReady) return;
 
     if (isDark) {
       document.documentElement.classList.add("dark");
@@ -34,7 +39,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
 
     localStorage.setItem("theme", isDark ? "dark" : "light");
-  }, [isDark]);
+  }, [isDark, isThemeReady]);
 
   const toggleTheme = () => setIsDark(!isDark);
 
