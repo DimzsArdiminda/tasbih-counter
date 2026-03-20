@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { signIn } from "next-auth/react";
@@ -9,7 +9,7 @@ import AlertError from "@/components/ui/error";
 import AlertSuccess from "@/components/ui/success";
 import Field from "@/components/ui/field";
 
-export default function LoginPage() {
+function LoginContent() {
   const { isDark } = useTheme();
   const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
@@ -23,7 +23,6 @@ export default function LoginPage() {
   useEffect(() => {
     const registered = searchParams.get("registered");
     if (registered === "true") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSuccessMessage("Register berhasil! Silakan login untuk melanjutkan.");
       Router.replace("/auth/login");
     }
@@ -217,5 +216,13 @@ export default function LoginPage() {
         </a>
       </div>
     </>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }

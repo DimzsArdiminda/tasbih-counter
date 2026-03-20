@@ -26,7 +26,7 @@
 
 4. **Submit Sitemap**
    - Setelah terverifikasi, buka menu "Sitemaps"
-   - Submit URL: `https://do-dzikit.vercel.app/sitemap.xml`
+   - Submit URL: `https://do-dzikir.vercel.app/sitemap.xml`
 
 5. **Request Indexing**
    - Buka "URL Inspection"
