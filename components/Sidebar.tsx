@@ -96,7 +96,7 @@ export default function Sidebar({
 
             <a
               className={`w-full px-4 py-2 rounded-lg ${isDark ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"} text-white text-sm font-medium transition-colors`}
-              href="mailto:dimasardiminda@gmail.com"
+              href="mailto:ardiminda.project@gmail.com"
             >
               Hubungi disini
             </a>

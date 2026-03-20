@@ -42,13 +42,15 @@ model Account {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  name          String?
-  password      String?
-  photo         String?
-  emailVerified DateTime?
-  createdAt     DateTime  @default(now())
+  id                     String    @id @default(uuid())
+  email                  String    @unique
+  name                   String?
+  password               String?
+  photo                  String?
+  emailVerified          DateTime?
+  resetPasswordToken     String?   @unique
+  resetPasswordExpires   DateTime?
+  createdAt              DateTime  @default(now())
 
   accounts Account[]
   sessions Session[]

@@ -133,7 +133,7 @@ function LoginContent() {
         {/* Remember Me & Forgot Password */}
         <div className="flex items-center justify-between">
           <a
-            href="#"
+            href="/auth/forgot-password"
             className={`text-sm font-medium ${isDark ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-700"} transition-colors`}
           >
             Lupa password?
