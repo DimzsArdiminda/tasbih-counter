@@ -4,8 +4,8 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { email, password, name, nama } = await req.json();
-    const finalName = name ?? nama ?? null;
+    const { email, password, name } = await req.json();
+    const finalName = name ?? null;
 
     if (!email || !password) {
       return NextResponse.json(

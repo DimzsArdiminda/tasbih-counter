@@ -1,21 +1,33 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import AlertError from "@/components/ui/error";
+import AlertSuccess from "@/components/ui/success";
 import Field from "@/components/ui/field";
 
 export default function LoginPage() {
   const { isDark } = useTheme();
+  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const Router = useRouter();
+
+  useEffect(() => {
+    const registered = searchParams.get("registered");
+    if (registered === "true") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSuccessMessage("Register berhasil! Silakan login untuk melanjutkan.");
+      Router.replace("/auth/login");
+    }
+  }, [searchParams, Router]);
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
@@ -43,6 +55,12 @@ export default function LoginPage() {
   return (
     <>
       {error && <AlertError errorMessage={error} />}
+      {successMessage && (
+        <AlertSuccess
+          message={successMessage}
+          onClose={() => setSuccessMessage("")}
+        />
+      )}
 
       <div className="mb-8">
         <h2

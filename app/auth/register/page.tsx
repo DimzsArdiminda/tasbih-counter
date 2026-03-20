@@ -9,11 +9,12 @@ import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { RegisterDataType, RegisterSchema } from "@/app/schemas/register";
+import { registerUser } from "@/helper/reg";
 
 export default function Register() {
   const { isDark } = useTheme();
   const router = useRouter();
-  const [error, setError] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
 
   const {
     control,
@@ -21,42 +22,28 @@ export default function Register() {
     formState: { errors },
   } = useForm<RegisterDataType>({
     resolver: zodResolver(RegisterSchema),
+    defaultValues: {
+      nama: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
   });
 
   const registerMutation = useMutation({
     mutationFn: async (formData: RegisterDataType) => {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-          name: formData.nama,
-        }),
-      });
-
-      const data = await res.json().catch(() => null);
-
-      if (!res.ok) {
-        throw new Error(data?.message || "Register gagal");
-      }
-
-      return data;
-    },
-    onMutate: () => {
-      setError("");
+      return registerUser(
+        formData.email,
+        formData.password,
+        formData.nama,
+        formData.confirmPassword,
+      );
     },
     onSuccess: () => {
-      router.push("/auth/login");
+      router.push("/auth/login?registered=true");
     },
-    onError: (mutationError) => {
-      setError(
-        mutationError instanceof Error
-          ? mutationError.message
-          : "Terjadi kesalahan",
-      );
+    onError: (error) => {
+      setAlertMessage(error.message || "Terjadi kesalahan saat register");
     },
   });
 
@@ -64,21 +51,9 @@ export default function Register() {
     registerMutation.mutate(formData);
   };
 
-  const firstValidationError =
-    errors.nama?.message ||
-    errors.email?.message ||
-    errors.password?.message ||
-    errors.confirmPassword?.message;
-  const validationErrorMessage = firstValidationError
-    ? String(firstValidationError)
-    : "";
-
   return (
     <>
-      {error && <AlertError errorMessage={error} />}
-      {!error && validationErrorMessage && (
-        <AlertError errorMessage={validationErrorMessage} />
-      )}
+      {alertMessage && <AlertError errorMessage={alertMessage} />}
 
       <div className="mb-8">
         <h2
@@ -106,6 +81,7 @@ export default function Register() {
               icon={User}
               isDark={isDark}
               required
+              error={errors.nama?.message}
             />
           )}
         />
@@ -124,6 +100,7 @@ export default function Register() {
               icon={Mail}
               isDark={isDark}
               required
+              error={errors.email?.message}
             />
           )}
         />
@@ -142,6 +119,7 @@ export default function Register() {
               icon={Lock}
               isDark={isDark}
               required
+              error={errors.password?.message}
             />
           )}
         />
@@ -160,6 +138,7 @@ export default function Register() {
               icon={Lock}
               isDark={isDark}
               required
+              error={errors.confirmPassword?.message}
             />
           )}
         />

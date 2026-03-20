@@ -12,6 +12,7 @@ interface FieldProps {
   icon?: LucideIcon;
   isDark?: boolean;
   rightAction?: React.ReactNode;
+  error?: string;
 }
 
 export default function Field({
@@ -25,6 +26,7 @@ export default function Field({
   icon: Icon,
   isDark = false,
   rightAction,
+  error,
 }: FieldProps) {
   return (
     <div>
@@ -62,6 +64,7 @@ export default function Field({
           </div>
         )}
       </div>
+      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
   );
 }
