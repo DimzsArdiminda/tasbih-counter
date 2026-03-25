@@ -4,6 +4,7 @@ import { Moon, Sun, Menu, X } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import NavbarGuest from "./NavbarGuest";
 
 interface HeaderProps {
   isDark: boolean;
@@ -60,31 +61,7 @@ export default function Header({
           {/* Navigation */}
           {status !== "authenticated" ? (
             <nav className="hidden md:flex items-center gap-6">
-              <a
-                href="/dashboard"
-                className={`${isDark ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"} transition-colors`}
-              >
-                Dashboard
-              </a>
-
-              <a
-                href="/tentang"
-                className={`${isDark ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"} transition-colors`}
-              >
-                Tentang
-              </a>
-              <a
-                href="#"
-                className={`${isDark ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"} transition-colors`}
-              >
-                Layanan
-              </a>
-              <a
-                href="#"
-                className={`${isDark ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"} transition-colors`}
-              >
-                Kontak
-              </a>
+              <NavbarGuest isDark={isDark} />
             </nav>
           ) : (
 

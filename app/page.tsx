@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+
 import { useTheme } from "@/contexts/ThemeContext";
 import {
   Moon,
@@ -21,6 +22,7 @@ import {
   Zap,
   Globe,
 } from "lucide-react";
+import NavbarGuest from "@/components/NavbarGuest";
 
 export default function LandingPage() {
   const { isDark, toggleTheme } = useTheme();
@@ -81,38 +83,7 @@ export default function LandingPage() {
           </Link>
 
           <nav className="hidden md:flex space-x-6">
-            <Link
-              href="/tasbih"
-              className={`hover:text-blue-500 transition ${
-                isDark ? "text-gray-300" : "text-gray-700"
-              }`}
-            >
-              Tasbih
-            </Link>
-            <Link
-              href="/tentang"
-              className={`hover:text-blue-500 transition ${
-                isDark ? "text-gray-300" : "text-gray-700"
-              }`}
-            >
-              Tentang
-            </Link>
-            <Link
-              href="/blog"
-              className={`hover:text-blue-500 transition ${
-                isDark ? "text-gray-300" : "text-gray-700"
-              }`}
-            >
-              Blog
-            </Link>
-            <Link
-              href="/auth/login"
-              className={`hover:text-blue-500 transition ${
-                isDark ? "text-gray-300" : "text-gray-700"
-              }`}
-            >
-              Login
-            </Link>
+            <NavbarGuest isDark={isDark} />
           </nav>
 
           <button
@@ -774,7 +745,10 @@ export default function LandingPage() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/developer" className="hover:text-white transition">
+                  <Link
+                    href="/developer"
+                    className="hover:text-white transition"
+                  >
                     Developer
                   </Link>
                 </li>
