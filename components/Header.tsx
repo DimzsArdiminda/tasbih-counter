@@ -26,10 +26,8 @@ export default function Header({
       callbackUrl: "/auth/login",
     });
 
-
     Router.push("/auth/login");
-  }
-
+  };
 
   return (
     <header
@@ -60,42 +58,45 @@ export default function Header({
           </div>
 
           {/* Navigation */}
-          <nav className="hidden md:flex items-center gap-6">
-            {status === "authenticated" ? (
+          {status !== "authenticated" ? (
+            <nav className="hidden md:flex items-center gap-6">
               <a
                 href="/dashboard"
                 className={`${isDark ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"} transition-colors`}
               >
                 Dashboard
               </a>
-            ) : (
-              
-              <Link
-                href="/"
+
+              <a
+                href="/tentang"
                 className={`${isDark ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"} transition-colors`}
               >
-                Home
-              </Link>
-            )}
-            <a
-              href="/tentang"
-              className={`${isDark ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"} transition-colors`}
-            >
-              Tentang
-            </a>
-            <a
-              href="#"
-              className={`${isDark ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"} transition-colors`}
-            >
-              Layanan
-            </a>
-            <a
-              href="#"
-              className={`${isDark ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"} transition-colors`}
-            >
-              Kontak
-            </a>
-          </nav>
+                Tentang
+              </a>
+              <a
+                href="#"
+                className={`${isDark ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"} transition-colors`}
+              >
+                Layanan
+              </a>
+              <a
+                href="#"
+                className={`${isDark ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"} transition-colors`}
+              >
+                Kontak
+              </a>
+            </nav>
+          ) : (
+
+              <p>
+                {new Date().toLocaleDateString("id-ID", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </p>
+
+          )}
 
           {/* Theme Toggle & CTA */}
           <div className="flex items-center gap-4">

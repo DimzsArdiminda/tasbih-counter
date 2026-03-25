@@ -90,12 +90,12 @@ export default function LandingPage() {
               Tasbih
             </Link>
             <Link
-              href="/jadwal-sholat"
+              href="/tentang"
               className={`hover:text-blue-500 transition ${
                 isDark ? "text-gray-300" : "text-gray-700"
               }`}
             >
-              Jadwal Sholat
+              Tentang
             </Link>
             <Link
               href="/blog"
@@ -758,7 +758,7 @@ export default function LandingPage() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/" className="hover:text-white transition">
+                  <Link href="/tentang" className="hover:text-white transition">
                     Tentang Kami
                   </Link>
                 </li>
@@ -771,6 +771,11 @@ export default function LandingPage() {
                 <li>
                   <Link href="/" className="hover:text-white transition">
                     Kebijakan Privasi
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/developer" className="hover:text-white transition">
+                    Developer
                   </Link>
                 </li>
                 <li>
