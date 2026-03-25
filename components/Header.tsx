@@ -78,7 +78,7 @@ export default function Header({
               </Link>
             )}
             <a
-              href="#"
+              href="/tentang"
               className={`${isDark ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"} transition-colors`}
             >
               Tentang
