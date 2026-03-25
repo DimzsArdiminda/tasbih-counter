@@ -1,27 +1,27 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import { KabkotaResponse } from "@/types/jadwal-solat";
 
-export async function GET(request: NextRequest) {
+const MYQURAN_API_BASE = "https://api.myquran.com/v3/sholat";
+
+export async function GET() {
   try {
-    const response = await fetch(
-      `http://loscos4w40ko04sss0cg0wo4.70.153.72.107.sslip.io/cities`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
+    const response = await fetch(`${MYQURAN_API_BASE}/kabkota/all`, {
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+    });
 
     if (!response.ok) {
-      throw new Error("Failed to fetch cities data");
+      throw new Error("Failed to fetch cities data from MyQuran API");
     }
 
-    const data = await response.json();
+    const data: KabkotaResponse = await response.json();
 
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching cities data:", error);
     return NextResponse.json(
-      { error: "Failed to fetch cities data" },
+      { status: false, message: "Failed to fetch cities data" },
       { status: 500 },
     );
   }

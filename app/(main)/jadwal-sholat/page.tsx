@@ -1,73 +1,91 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { Loader2, MapPin, ChevronRight } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
-
-interface City {
-  id: string;
-  name: string;
-  slug: string;
-  provinceId: string;
-  coordinate: {
-    latitude: number;
-    longitude: number;
-  };
-}
-
-interface Province {
-  id: string;
-  name: string;
-  slug: string;
-  cities: City[];
-}
+import { KabupatanKota } from "@/types/jadwal-solat";
 
 export default function JadwalSholat() {
   const { isDark } = useTheme();
-  const [provinces, setProvinces] = useState<Province[]>([]);
+  const [allCities, setAllCities] = useState<KabupatanKota[]>([]);
+  const [displayedCities, setDisplayedCities] = useState<KabupatanKota[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searching, setSearching] = useState(false);
   const [error, setError] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Fetch all cities on component mount
   useEffect(() => {
-    fetchProvinces();
+    fetchAllCities();
   }, []);
 
-  const fetchProvinces = async () => {
+  const fetchAllCities = async () => {
     try {
-      const response = await fetch("/api/province");
-      if (!response.ok) throw new Error("Gagal mengambil data provinsi");
+      const response = await fetch("/api/cities");
+      if (!response.ok) throw new Error("Gagal mengambil data kota");
       const data = await response.json();
-      setProvinces(data);
+      if (data.data && Array.isArray(data.data)) {
+        setAllCities(data.data);
+        setDisplayedCities(data.data);
+      }
     } catch (err) {
-      setError("Gagal mengambil data provinsi");
+      setError("Gagal mengambil data kota");
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Filter provinces and cities based on search term
-  const filteredProvinces = provinces
-    .map((province) => ({
-      ...province,
-      cities: province.cities.filter((city) =>
-        city.name.toLowerCase().includes(searchTerm.toLowerCase()),
-      ),
-    }))
-    .filter(
-      (province) =>
-        province.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        province.cities.length > 0,
-    );
+  // Debounced search function
+  const handleSearch = useCallback(
+    (query: string) => {
+      setSearchTerm(query);
+
+      // Clear previous timeout
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+
+      if (query.trim() === "") {
+        setDisplayedCities(allCities);
+        setSearching(false);
+        return;
+      }
+
+      setSearching(true);
+
+      // Debounce search request
+      searchTimeoutRef.current = setTimeout(async () => {
+        try {
+          const response = await fetch(
+            `/api/cities/search?q=${encodeURIComponent(query.trim())}`,
+          );
+          if (!response.ok) throw new Error("Gagal mencari kota");
+          const data = await response.json();
+          if (data.data && Array.isArray(data.data)) {
+            setDisplayedCities(data.data);
+          } else {
+            setDisplayedCities([]);
+          }
+        } catch (err) {
+          console.error("Search error:", err);
+          setDisplayedCities([]);
+        } finally {
+          setSearching(false);
+        }
+      }, 300); // 300ms debounce
+    },
+    [allCities],
+  );
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center min-h-100">
         <div className="flex flex-col items-center gap-4">
           <Loader2 size={40} className="animate-spin text-blue-600" />
-          <p className="text-gray-600">Memuat data...</p>
+          <p className="text-gray-600">Memuat data kota...</p>
         </div>
       </div>
     );
@@ -83,85 +101,72 @@ export default function JadwalSholat() {
 
   return (
     <div>
-      <div className="mb-6">
+      <div className="mb-8 max-w-6xl mx-auto">
         <h1
-          className={`text-3xl font-bold ${isDark ? "text-white" : "text-gray-900"} mb-2`}
+          className={`text-4xl font-bold ${isDark ? "text-white" : "text-gray-900"} mb-3`}
         >
           Jadwal Sholat
         </h1>
-        <p className={`${isDark ? "text-gray-400" : "text-gray-600"}`}>
-          Pilih kota untuk melihat jadwal sholat
+        <p className={`text-lg ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+          Cari dan pilih kota untuk melihat jadwal sholat
         </p>
       </div>
 
       {/* Search */}
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="Cari provinsi atau kota..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${isDark ? "bg-gray-800 border-gray-700 text-white" : "bg-white border-gray-300 text-gray-900"}`}
-        />
-      </div>
-
-      {/* Province List */}
-      <div className="space-y-6">
-        {filteredProvinces.map((province) => (
-          <div
-            key={province.id}
-            className={`${isDark ? "bg-gray-800" : "bg-white"} rounded-xl shadow-sm p-6`}
-          >
-            <h2
-              className={`text-xl font-bold ${isDark ? "text-white" : "text-gray-900"} mb-4`}
-            >
-              {province.name}
-            </h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {province.cities.map((city) => (
-                <Link
-                  key={city.id}
-                  href={`/jadwal-sholat/${city.coordinate.latitude}/${city.coordinate.longitude}`}
-                  className={`flex items-center justify-between p-4 rounded-lg border transition-all group ${
-                    isDark
-                      ? "border-gray-700 hover:border-blue-500 hover:bg-blue-900/20"
-                      : "border-gray-200 hover:border-blue-500 hover:bg-blue-50"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <MapPin
-                      size={20}
-                      className="text-gray-400 group-hover:text-blue-600"
-                    />
-                    <div>
-                      <p
-                        className={`font-medium ${isDark ? "text-white" : "text-gray-900"}`}
-                      >
-                        {city.name}
-                      </p>
-                      <p
-                        className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}
-                      >
-                        {city.coordinate.latitude.toFixed(4)},{" "}
-                        {city.coordinate.longitude.toFixed(4)}
-                      </p>
-                    </div>
-                  </div>
-                  <ChevronRight
-                    size={20}
-                    className="text-gray-400 group-hover:text-blue-600"
-                  />
-                </Link>
-              ))}
+      <div className="mb-8 max-w-6xl mx-auto">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Cari kota atau kabupaten..."
+            value={searchTerm}
+            onChange={(e) => handleSearch(e.target.value)}
+            className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${isDark ? "bg-gray-800 border-gray-700 text-white" : "bg-white border-gray-300 text-gray-900"}`}
+          />
+          {searching && (
+            <div className="absolute right-4 top-3">
+              <Loader2 size={20} className="animate-spin text-blue-600" />
             </div>
-          </div>
-        ))}
+          )}
+        </div>
       </div>
 
-      {filteredProvinces.length === 0 && (
+      {/* Cities List */}
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+          {displayedCities.map((city) => (
+            <Link
+              key={city.id}
+              href={`/jadwal-sholat/${city.id}`}
+              className={`flex items-center justify-between p-4 rounded-lg border transition-all group h-full ${
+                isDark
+                  ? "border-gray-700 hover:border-blue-500 hover:bg-blue-900/20"
+                  : "border-gray-200 hover:border-blue-500 hover:bg-blue-50"
+              }`}
+            >
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <MapPin
+                  size={20}
+                  className="text-gray-400 group-hover:text-blue-600 shrink-0"
+                />
+                <p
+                  className={`font-medium ${isDark ? "text-white" : "text-gray-900"} truncate`}
+                >
+                  {city.lokasi}
+                </p>
+              </div>
+              <ChevronRight
+                size={20}
+                className="text-gray-400 group-hover:text-blue-600 shrink-0 ml-2"
+              />
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {displayedCities.length === 0 && !searching && (
         <div className="text-center py-12">
           <p className={`${isDark ? "text-gray-400" : "text-gray-500"}`}>
-            Tidak ada hasil yang ditemukan
+            {searchTerm ? "Tidak ada kota yang cocok" : "Tidak ada data kota"}
           </p>
         </div>
       )}
