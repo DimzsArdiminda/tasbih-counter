@@ -311,7 +311,7 @@ export default function PanduanDzikirHarianPage() {
               >
                 tasbih online gratis
               </Link>{" "}
-              dari Do'a Dzikit, Anda bisa:
+              dari Do'a dzikir, Anda bisa:
             </p>
 
             <ul
@@ -352,7 +352,7 @@ export default function PanduanDzikirHarianPage() {
               >
                 💡 Mulai berdzikir sekarang dengan{" "}
                 <Link href="/tasbih" className="underline hover:no-underline">
-                  Tasbih Online Do'a Dzikit
+                  Tasbih Online Do'a dzikir
                 </Link>
               </p>
             </div>

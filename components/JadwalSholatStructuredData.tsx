@@ -10,7 +10,7 @@ export default function JadwalSholatStructuredData() {
     name: "Jadwal Sholat Indonesia",
     description:
       "Cek jadwal sholat hari ini untuk seluruh Indonesia. Waktu sholat akurat: Subuh, Dzuhur, Ashar, Maghrib, Isya.",
-    url: "https://do-dzikit.vercel.app/jadwal-sholat",
+    url: "https://do-dzikir.vercel.app/jadwal-sholat",
     applicationCategory: "LifestyleApplication",
     operatingSystem: "Any",
     offers: {

@@ -111,7 +111,7 @@
    - Atau manual verification
 
 2. **Submit Sitemap**
-   - Submit: `https://do-dzikit.vercel.app/sitemap.xml`
+   - Submit: `https://do-dzikir.vercel.app/sitemap.xml`
 
 ## 4. Performance Monitoring
 
@@ -209,12 +209,12 @@ const handleSearchCity = (city: string) => {
    curl -X POST "https://api.indexnow.org/indexnow" \
      -H "Content-Type: application/json" \
      -d '{
-       "host": "do-dzikit.vercel.app",
+       "host": "do-dzikir.vercel.app",
        "key": "YOUR_API_KEY",
        "urlList": [
-         "https://do-dzikit.vercel.app/",
-         "https://do-dzikit.vercel.app/tasbih",
-         "https://do-dzikit.vercel.app/jadwal-sholat"
+         "https://do-dzikir.vercel.app/",
+         "https://do-dzikir.vercel.app/tasbih",
+         "https://do-dzikir.vercel.app/jadwal-sholat"
        ]
      }'
    ```

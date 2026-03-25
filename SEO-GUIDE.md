@@ -1,4 +1,4 @@
-# SEO Implementation Guide - Do'a Dzikit
+# SEO Implementation Guide - Do'a dzikir
 
 ## ✅ Implementasi SEO yang Sudah Dilakukan
 

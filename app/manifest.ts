@@ -2,8 +2,8 @@ import { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Do'a Dzikit - Tasbih Online & Dzikir Digital",
-    short_name: "Do'a Dzikit",
+    name: "Do'a dzikir - Tasbih Online & Dzikir Digital",
+    short_name: "Do'a dzikir",
     description:
       "Tasbih online gratis dan dzikir digital. Aplikasi Muslim untuk counter tasbih, jadwal sholat Indonesia, dan dzikir harian.",
     start_url: "/",

@@ -25,11 +25,11 @@ export const metadata: Metadata = {
     title: "Jadwal Sholat Hari Ini - Waktu Sholat Indonesia",
     description:
       "Lihat jadwal sholat hari ini untuk seluruh kota di Indonesia. Waktu sholat akurat dan mudah diakses.",
-    url: "https://do-dzikit.vercel.app/jadwal-sholat",
+    url: "https://do-dzikir.vercel.app/jadwal-sholat",
     type: "website",
     images: [
       {
-        url: "https://do-dzikit.vercel.app/og-jadwal-sholat.png",
+        url: "https://do-dzikir.vercel.app/og-jadwal-sholat.png",
         width: 1200,
         height: 630,
         alt: "Jadwal Sholat Indonesia",
@@ -37,6 +37,6 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://do-dzikit.vercel.app/jadwal-sholat",
+    canonical: "https://do-dzikir.vercel.app/jadwal-sholat",
   },
 };

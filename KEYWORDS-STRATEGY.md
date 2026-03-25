@@ -109,15 +109,15 @@ Tambahkan di content untuk semantic relevance:
 
 ### Homepage (/)
 
-**Primary**: Do'a Dzikit, tasbih online, dzikir online
+**Primary**: Do'a dzikir, tasbih online, dzikir online
 **Content Plan**:
 
 ```
-H1: Do'a Dzikit - Tasbih Online & Dzikir Digital Gratis
+H1: Do'a dzikir - Tasbih Online & Dzikir Digital Gratis
 H2: Platform Ibadah Digital Terlengkap untuk Muslim Indonesia
 H2: Fitur Tasbih Online Terbaik
 H2: Jadwal Sholat Akurat Seluruh Indonesia
-H2: Mengapa Memilih Do'a Dzikit?
+H2: Mengapa Memilih Do'a dzikir?
 ```
 
 ### /tasbih

@@ -1,4 +1,4 @@
-# 🚀 Implementasi SEO - Do'a Dzikit
+# 🚀 Implementasi SEO - Do'a dzikir
 
 ## ✅ Yang Sudah Diimplementasikan
 
@@ -35,7 +35,7 @@ Lokasi: `app/sitemap.ts`
 - ✅ Priority & changeFrequency
 - ✅ URL untuk kota-kota besar
 
-**URL:** `https://do-dzikit.vercel.app/sitemap.xml`
+**URL:** `https://do-dzikir.vercel.app/sitemap.xml`
 
 **Impact:**
 
@@ -54,7 +54,7 @@ Lokasi: `app/robots.ts`
 - ✅ Sitemap reference
 - ✅ API routes protection
 
-**URL:** `https://do-dzikit.vercel.app/robots.txt`
+**URL:** `https://do-dzikir.vercel.app/robots.txt`
 
 **Impact:**
 
@@ -128,7 +128,7 @@ Lokasi: Blog pages
 ### Homepage (/)
 
 ```
-Primary: Do'a Dzikit, tasbih online, dzikir online
+Primary: Do'a dzikir, tasbih online, dzikir online
 Secondary: jadwal sholat, aplikasi muslim
 Keywords Density: 1-2%
 ```
@@ -232,13 +232,13 @@ View page source (Ctrl+U) dan cari:
 Buka di browser:
 
 ```
-https://do-dzikit.vercel.app/sitemap.xml
+https://do-dzikir.vercel.app/sitemap.xml
 ```
 
 ### 4. **Test Robots.txt**
 
 ```
-https://do-dzikit.vercel.app/robots.txt
+https://do-dzikir.vercel.app/robots.txt
 ```
 
 ### 5. **Mobile-Friendly Test**
@@ -360,7 +360,7 @@ Untuk panduan lengkap, lihat:
 ## ⚠️ Important Notes
 
 1. **Ganti Domain**:
-   - Update semua `do-dzikit.vercel.app` ke domain custom Anda
+   - Update semua `do-dzikir.vercel.app` ke domain custom Anda
    - Update di: metadata.ts, sitemap.ts, robots.ts
 
 2. **Create Images**:
@@ -382,4 +382,4 @@ Untuk panduan lengkap, lihat:
 ---
 
 _Last Updated: 18 Januari 2026_
-_Maintained by: Do'a Dzikit Team_
+_Maintained by: Do'a dzikir Team_

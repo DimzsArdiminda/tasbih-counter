@@ -10,7 +10,7 @@ export default function TasbihStructuredData() {
     name: "Tasbih Online - Counter Dzikir Digital",
     description:
       "Aplikasi tasbih online gratis dengan counter dzikir otomatis untuk Subhanallah, Alhamdulillah, Allahu Akbar, dan dzikir lainnya.",
-    url: "https://do-dzikit.vercel.app/tasbih",
+    url: "https://do-dzikir.vercel.app/tasbih",
     applicationCategory: "LifestyleApplication",
     operatingSystem: "Any",
     offers: {

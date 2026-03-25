@@ -16,10 +16,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Blog Islami - Panduan Dzikir & Ibadah Digital",
     description: "Artikel dan panduan lengkap tentang ibadah Muslim modern",
-    url: "https://do-dzikit.vercel.app/blog",
+    url: "https://do-dzikir.vercel.app/blog",
     type: "website",
   },
   alternates: {
-    canonical: "https://do-dzikit.vercel.app/blog",
+    canonical: "https://do-dzikir.vercel.app/blog",
   },
 };

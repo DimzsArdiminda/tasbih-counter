@@ -1,4 +1,4 @@
-# 🕌 Do'a Dzikit - Tasbih Online & Dzikir Digital Gratis
+# 🕌 Do'a dzikir - Tasbih Online & Dzikir Digital Gratis
 
 Platform web modern untuk membantu umat Muslim dalam menjalankan ibadah sehari-hari dengan fitur **tasbih online gratis**, **dzikir digital**, dan **jadwal sholat Indonesia** yang akurat.
 

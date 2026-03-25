@@ -30,7 +30,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              name: "Do'a Dzikit",
+              name: "Do'a dzikir",
               description:
                 "Aplikasi tasbih online dan dzikir digital gratis untuk umat muslim. Hitung dzikir, lihat jadwal sholat, dan tingkatkan ibadah harian Anda.",
               url: "https://do-dzikir.vercel.app",
@@ -56,10 +56,10 @@ export default function RootLayout({
             }),
           }}
         />
-      <meta
-        name="google-site-verification"
-        content="gzmCfRx002CrgXI73t4FUyESZ9l239BVOClqCDFBRg4"
-      />
+        <meta
+          name="google-site-verification"
+          content="gzmCfRx002CrgXI73t4FUyESZ9l239BVOClqCDFBRg4"
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
