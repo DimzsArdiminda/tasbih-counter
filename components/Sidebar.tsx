@@ -67,51 +67,58 @@ export default function Sidebar({
               },
               {} as Record<string, typeof linkSidebar>,
             ),
-          ).map(([section, items]) => (
-            <div key={section}>
-              <h3
-                className={`text-xs font-semibold uppercase tracking-wider mb-2 px-4 ${
-                  isDark ? "text-gray-400" : "text-gray-500"
-                }`}
-              >
-                {section}
-              </h3>
-              <div className="space-y-2">
-                {items.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = pathname === item.link;
+          ).map(([section, items]) => {
+            // Sembunyikan section MVP Fiture jika tidak authenticated
+            if (section === "MVP Fiture" && status !== "authenticated") {
+              return null;
+            }
 
-                  if (
-                    item.link === "/dashboard" &&
-                    status !== "authenticated"
-                  ) {
-                    return null;
-                  }
+            return (
+              <div key={section}>
+                <h3
+                  className={`text-xs font-semibold uppercase tracking-wider mb-2 px-4 ${
+                    isDark ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  {section}
+                </h3>
+                <div className="space-y-2">
+                  {items.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = pathname === item.link;
 
-                  return (
-                    <a
-                      key={item.link}
-                      href={item.link}
-                      target={item.external ? "_blank" : undefined}
-                      rel={item.external ? "noopener noreferrer" : undefined}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-lg ${
-                        isActive
-                          ? isDark
-                            ? "bg-blue-600 text-white"
-                            : "bg-blue-50 text-blue-600"
-                          : isDark
-                            ? "text-gray-300 hover:bg-gray-700"
-                            : "text-gray-600 hover:bg-gray-100"
-                      } transition-colors`}
-                    >
-                      <Icon size={20} />
-                      <span className="font-medium">{item.title}</span>
-                    </a>
-                  );
-                })}
+                    if (
+                      item.link === "/dashboard" &&
+                      status !== "authenticated"
+                    ) {
+                      return null;
+                    }
+
+                    return (
+                      <a
+                        key={item.link}
+                        href={item.link}
+                        target={item.external ? "_blank" : undefined}
+                        rel={item.external ? "noopener noreferrer" : undefined}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-lg ${
+                          isActive
+                            ? isDark
+                              ? "bg-blue-600 text-white"
+                              : "bg-blue-50 text-blue-600"
+                            : isDark
+                              ? "text-gray-300 hover:bg-gray-700"
+                              : "text-gray-600 hover:bg-gray-100"
+                        } transition-colors`}
+                      >
+                        <Icon size={20} />
+                        <span className="font-medium">{item.title}</span>
+                      </a>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </nav>
 
         {/* Sidebar Footer Card */}
