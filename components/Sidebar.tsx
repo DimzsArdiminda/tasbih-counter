@@ -15,22 +15,26 @@ const linkSidebar = [
     title: "Dashboard",
     link: "/dashboard",
     icon: Home,
+    section: "dashboard",
   },
   {
     title: "Al Quran",
     link: "https://quran-me.vercel.app",
     icon: Book,
     external: true,
+    section: "MVP Fiture",
   },
   {
     title: "Jadwal Sholat",
     link: "/jadwal-sholat",
     icon: Clock,
+    section: "MVP Fiture",
   },
   {
     title: "Tasbih",
     link: "/tasbih",
     icon: Sparkles,
+    section: "MVP Fiture",
   },
 ];
 
@@ -52,36 +56,62 @@ export default function Sidebar({
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
         `}
       >
-        <nav className="p-4 space-y-2">
-          {linkSidebar.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.link;
-
-            if (item.link === "/dashboard" && status !== "authenticated") {
-              return null;
-            }
-
-            return (
-              <a
-                key={item.link}
-                href={item.link}
-                target={item.external ? "_blank" : undefined}
-                rel={item.external ? "noopener noreferrer" : undefined}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg ${
-                  isActive
-                    ? isDark
-                      ? "bg-blue-600 text-white"
-                      : "bg-blue-50 text-blue-600"
-                    : isDark
-                      ? "text-gray-300 hover:bg-gray-700"
-                      : "text-gray-600 hover:bg-gray-100"
-                } transition-colors`}
+        <nav className="p-4 space-y-6 overflow-y-auto">
+          {Object.entries(
+            linkSidebar.reduce(
+              (acc, item) => {
+                const section = item.section || "Other";
+                if (!acc[section]) acc[section] = [];
+                acc[section].push(item);
+                return acc;
+              },
+              {} as Record<string, typeof linkSidebar>,
+            ),
+          ).map(([section, items]) => (
+            <div key={section}>
+              <h3
+                className={`text-xs font-semibold uppercase tracking-wider mb-2 px-4 ${
+                  isDark ? "text-gray-400" : "text-gray-500"
+                }`}
               >
-                <Icon size={20} />
-                <span className="font-medium">{item.title}</span>
-              </a>
-            );
-          })}
+                {section}
+              </h3>
+              <div className="space-y-2">
+                {items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.link;
+
+                  if (
+                    item.link === "/dashboard" &&
+                    status !== "authenticated"
+                  ) {
+                    return null;
+                  }
+
+                  return (
+                    <a
+                      key={item.link}
+                      href={item.link}
+                      target={item.external ? "_blank" : undefined}
+                      rel={item.external ? "noopener noreferrer" : undefined}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-lg ${
+                        isActive
+                          ? isDark
+                            ? "bg-blue-600 text-white"
+                            : "bg-blue-50 text-blue-600"
+                          : isDark
+                            ? "text-gray-300 hover:bg-gray-700"
+                            : "text-gray-600 hover:bg-gray-100"
+                      } transition-colors`}
+                    >
+                      <Icon size={20} />
+                      <span className="font-medium">{item.title}</span>
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
 
         {/* Sidebar Footer Card */}
@@ -94,13 +124,12 @@ export default function Sidebar({
             Ada saran?
           </h3>
 
-            <a
-              className={`w-full px-4 py-2 rounded-lg ${isDark ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"} text-white text-sm font-medium transition-colors`}
-              href="mailto:ardiminda.project@gmail.com"
-            >
-              Hubungi disini
-            </a>
-          
+          <a
+            className={`w-full px-4 py-2 rounded-lg ${isDark ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"} text-white text-sm font-medium transition-colors`}
+            href="mailto:ardiminda.project@gmail.com"
+          >
+            Hubungi disini
+          </a>
         </div>
       </aside>
 
