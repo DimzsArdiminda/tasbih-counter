@@ -60,6 +60,11 @@ export default function Sidebar({
           {Object.entries(
             linkSidebar.reduce(
               (acc, item) => {
+                // Sembunyikan dashboard section jika tidak authenticated
+                if (item.link === "/dashboard" && status !== "authenticated") {
+                  return acc;
+                }
+
                 const section = item.section || "Other";
                 if (!acc[section]) acc[section] = [];
                 acc[section].push(item);
@@ -67,58 +72,44 @@ export default function Sidebar({
               },
               {} as Record<string, typeof linkSidebar>,
             ),
-          ).map(([section, items]) => {
-            // Sembunyikan section MVP Fiture jika tidak authenticated
-            if (section === "MVP Fiture" && status !== "authenticated") {
-              return null;
-            }
+          ).map(([section, items]) => (
+            <div key={section}>
+              <h3
+                className={`text-xs font-semibold uppercase tracking-wider mb-2 px-4 ${
+                  isDark ? "text-gray-400" : "text-gray-500"
+                }`}
+              >
+                {section}
+              </h3>
+              <div className="space-y-2">
+                {items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.link;
 
-            return (
-              <div key={section}>
-                <h3
-                  className={`text-xs font-semibold uppercase tracking-wider mb-2 px-4 ${
-                    isDark ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  {section}
-                </h3>
-                <div className="space-y-2">
-                  {items.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = pathname === item.link;
-
-                    if (
-                      item.link === "/dashboard" &&
-                      status !== "authenticated"
-                    ) {
-                      return null;
-                    }
-
-                    return (
-                      <a
-                        key={item.link}
-                        href={item.link}
-                        target={item.external ? "_blank" : undefined}
-                        rel={item.external ? "noopener noreferrer" : undefined}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-lg ${
-                          isActive
-                            ? isDark
-                              ? "bg-blue-600 text-white"
-                              : "bg-blue-50 text-blue-600"
-                            : isDark
-                              ? "text-gray-300 hover:bg-gray-700"
-                              : "text-gray-600 hover:bg-gray-100"
-                        } transition-colors`}
-                      >
-                        <Icon size={20} />
-                        <span className="font-medium">{item.title}</span>
-                      </a>
-                    );
-                  })}
-                </div>
+                  return (
+                    <a
+                      key={item.link}
+                      href={item.link}
+                      target={item.external ? "_blank" : undefined}
+                      rel={item.external ? "noopener noreferrer" : undefined}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-lg ${
+                        isActive
+                          ? isDark
+                            ? "bg-blue-600 text-white"
+                            : "bg-blue-50 text-blue-600"
+                          : isDark
+                            ? "text-gray-300 hover:bg-gray-700"
+                            : "text-gray-600 hover:bg-gray-100"
+                      } transition-colors`}
+                    >
+                      <Icon size={20} />
+                      <span className="font-medium">{item.title}</span>
+                    </a>
+                  );
+                })}
               </div>
-            );
-          })}
+            </div>
+          ))}
         </nav>
 
         {/* Sidebar Footer Card */}
