@@ -8,6 +8,7 @@ declare global {
 }
 
 const DATABASE_URL = process.env.DATABASE_URL;
+const isProduction = process.env.NODE_ENV === "production";
 
 if (!DATABASE_URL) {
   throw new Error("DATABASE_URL is not defined");
@@ -24,9 +25,7 @@ const poolConfig = {
   max: 10, // Maximum pool size
   connectionTimeoutMillis: 30000,
   idleTimeoutMillis: 30000,
-  ssl: {
-    rejectUnauthorized: false, // Accept self-signed certificates for Supabase
-  },
+  ssl: isProduction ? { rejectUnauthorized: false } : false,
 };
 
 const pool = global.pgPool ?? new Pool(poolConfig);

@@ -52,8 +52,10 @@ model User {
   resetPasswordExpires   DateTime?
   createdAt              DateTime  @default(now())
 
-  accounts Account[]
-  sessions Session[]
+  accounts    Account[]
+  sessions    Session[]
+  dzikirs     Dzikir[]
+  userDzikirs UserDzikir[]
 }
 
 model VerificationToken {
@@ -62,4 +64,30 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Dzikir {
+  id            String   @id @default(uuid())
+  name          String
+  arabic        String
+  translation   String
+  targetDefault Int
+  createdAt     DateTime @default(now())
+  userId        String?
+
+  user         User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userDzikirs  UserDzikir[]
+}
+
+model UserDzikir {
+  id        String   @id @default(uuid())
+  userId    String
+  dzikirId  String
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dzikir Dzikir @relation(fields: [dzikirId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dzikirId])
 }
