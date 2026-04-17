@@ -27,6 +27,7 @@ import NavbarGuest from "@/components/NavbarGuest";
 export default function LandingPage() {
   const { isDark, toggleTheme } = useTheme();
 
+
   return (
     <div
       className={`min-h-screen transition-colors duration-300 ${
@@ -70,37 +71,44 @@ export default function LandingPage() {
       >
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <Link href="/" className="flex items-center space-x-2">
-            <Sparkles
-              className={`w-8 h-8 ${isDark ? "text-blue-400" : "text-blue-600"}`}
-            />
-            <span
-              className={`text-2xl font-bold ${
-                isDark ? "text-white" : "text-gray-900"
-              }`}
-            >
-              Do&apos;a Dzikir
-            </span>
+        <Sparkles
+          className={`w-8 h-8 ${isDark ? "text-blue-400" : "text-blue-600"}`}
+        />
+        <span
+          className={`text-2xl font-bold ${
+            isDark ? "text-white" : "text-gray-900"
+          }`}
+        >
+          Do&apos;a Dzikir
+        </span>
           </Link>
 
           <nav className="hidden md:flex space-x-6">
-            <NavbarGuest isDark={isDark} />
+        <NavbarGuest isDark={isDark} />
           </nav>
 
-          <button
-            onClick={toggleTheme}
-            className={`p-2 rounded-lg ${
-              isDark
-                ? "bg-gray-700 hover:bg-gray-600"
-                : "bg-gray-100 hover:bg-gray-200"
-            } transition`}
-            aria-label="Toggle dark mode"
-          >
-            {isDark ? (
-              <Sun className="w-5 h-5 text-yellow-400" />
-            ) : (
-              <Moon className="w-5 h-5 text-gray-700" />
-            )}
-          </button>
+          <div className="flex items-center gap-2">
+        <button
+          onClick={toggleTheme}
+          className={`p-2 rounded-lg ${
+            isDark
+          ? "bg-gray-700 hover:bg-gray-600"
+          : "bg-gray-100 hover:bg-gray-200"
+          } transition`}
+          aria-label="Toggle dark mode"
+        >
+          {isDark ? (
+            <Sun className="w-5 h-5 text-yellow-400" />
+          ) : (
+            <Moon className="w-5 h-5 text-gray-700" />
+          )}
+        </button>
+        <Link 
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          href={'/auth/login'}>
+          Login
+        </Link>
+          </div>
         </div>
       </header>
 
