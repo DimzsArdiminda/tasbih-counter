@@ -79,6 +79,10 @@ model Dzikir {
   userDzikirs  UserDzikir[]
 }
 
+model DzikirCount{
+  
+}
+
 model UserDzikir {
   id        String   @id @default(uuid())
   userId    String

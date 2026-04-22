@@ -19,57 +19,20 @@ interface DhikrRecord {
 }
 
 interface DhikrPreset {
+  id?: string;
   name: string;
   arabic: string;
-  meaning: string;
-  defaultTarget: number;
+  translation: string;
+  targetDefault: number;
 }
-
-const dhikrPresets: DhikrPreset[] = [
-  {
-    name: "Subhanallah",
-    arabic: "سُبْحَانَ اللّٰهِ",
-    meaning: "Maha Suci Allah",
-    defaultTarget: 33,
-  },
-  {
-    name: "Alhamdulillah",
-    arabic: "اَلْحَمْدُ لِلّٰهِ",
-    meaning: "Segala Puji Bagi Allah",
-    defaultTarget: 33,
-  },
-  {
-    name: "Allahu Akbar",
-    arabic: "اَللّٰهُ اَكْبَرُ",
-    meaning: "Allah Maha Besar",
-    defaultTarget: 33,
-  },
-  {
-    name: "La ilaha illallah",
-    arabic: "لَا إِلٰهَ إِلَّا اللّٰهُ",
-    meaning: "Tiada Tuhan Selain Allah",
-    defaultTarget: 100,
-  },
-  {
-    name: "Astaghfirullah",
-    arabic: "أَسْتَغْفِرُ اللّٰهَ",
-    meaning: "Aku Memohon Ampun kepada Allah",
-    defaultTarget: 100,
-  },
-  {
-    name: "Salawat",
-    arabic: "اَللَّهُمَّ صَلِّ عَلٰى مُحَمَّدٍ",
-    meaning: "Ya Allah, limpahkanlah rahmat kepada Nabi Muhammad",
-    defaultTarget: 100,
-  },
-];
 
 const targetOptions = [33, 99, 100, 1000];
 
 export default function TasbihPage() {
   const { isDark } = useTheme();
   const [count, setCount] = useState(0);
-  const [selectedDhikr, setSelectedDhikr] = useState(dhikrPresets[0]);
+  const [allDhikrs, setAllDhikrs] = useState<DhikrPreset[]>([]);
+  const [selectedDhikr, setSelectedDhikr] = useState<DhikrPreset | null>(null);
   const [target, setTarget] = useState(33);
   const [customTarget, setCustomTarget] = useState("");
   const [showCustomInput, setShowCustomInput] = useState(false);
@@ -78,19 +41,43 @@ export default function TasbihPage() {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [vibrationEnabled, setVibrationEnabled] = useState(true);
   const [animate, setAnimate] = useState(false);
-  const [customDhikrs, setCustomDhikrs] = useState<DhikrPreset[]>([]);
   const [showCustomDhikrModal, setShowCustomDhikrModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load records and custom dhikrs from localStorage
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("/api/dzikir/all");
+        const data = await response.json();
+
+        const apiDhikrs: DhikrPreset[] = data.map((d: DhikrPreset) => ({
+          id: d.id,
+          name: d.name,
+          arabic: d.arabic,
+          translation: d.translation,
+          targetDefault: d.targetDefault,
+        }));
+
+        setAllDhikrs(apiDhikrs);
+
+        if (apiDhikrs.length > 0) {
+          setSelectedDhikr(apiDhikrs[0]);
+          setTarget(apiDhikrs[0].targetDefault);
+        }
+      } catch (error) {
+        console.error("Error fetching dzikir:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Load records from localStorage (only records, not dzikirs)
   useEffect(() => {
     const savedRecords = localStorage.getItem("tasbih-records");
     if (savedRecords) {
       setRecords(JSON.parse(savedRecords));
-    }
-
-    const savedCustomDhikrs = localStorage.getItem("custom-dhikrs");
-    if (savedCustomDhikrs) {
-      setCustomDhikrs(JSON.parse(savedCustomDhikrs));
     }
   }, []);
 
@@ -100,13 +87,6 @@ export default function TasbihPage() {
       localStorage.setItem("tasbih-records", JSON.stringify(records));
     }
   }, [records]);
-
-  // Save custom dhikrs to localStorage
-  useEffect(() => {
-    if (customDhikrs.length > 0) {
-      localStorage.setItem("custom-dhikrs", JSON.stringify(customDhikrs));
-    }
-  }, [customDhikrs]);
 
   const playSound = () => {
     if (soundEnabled) {
@@ -119,11 +99,13 @@ export default function TasbihPage() {
 
   const vibrate = () => {
     if (vibrationEnabled && navigator.vibrate) {
-      navigator.vibrate(50);
+      navigator.vibrate(200);
     }
   };
 
   const handleIncrement = () => {
+    if (!selectedDhikr) return;
+
     setCount((prev) => prev + 1);
     setAnimate(true);
     setTimeout(() => setAnimate(false), 200);
@@ -155,6 +137,8 @@ export default function TasbihPage() {
   };
 
   const saveRecord = (completed: boolean) => {
+    if (!selectedDhikr) return;
+
     const newRecord: DhikrRecord = {
       id: Date.now().toString(),
       dhikrName: selectedDhikr.name,
@@ -179,7 +163,7 @@ export default function TasbihPage() {
 
   const handleDhikrChange = (preset: DhikrPreset) => {
     setSelectedDhikr(preset);
-    setTarget(preset.defaultTarget);
+    setTarget(preset.targetDefault);
     setCount(0);
   };
 
@@ -202,35 +186,29 @@ export default function TasbihPage() {
   const handleAddCustomDhikr = (
     name: string,
     arabic: string,
-    meaning: string,
-    defaultTarget: number,
+    translation: string,
+    targetDefault: number,
   ) => {
     const newDhikr: DhikrPreset = {
       name,
       arabic,
-      meaning,
-      defaultTarget,
+      translation,
+      targetDefault,
     };
-    setCustomDhikrs((prev) => [...prev, newDhikr]);
+    setAllDhikrs((prev) => [...prev, newDhikr]);
   };
 
   const handleDeleteCustomDhikr = (name: string) => {
-    setCustomDhikrs((prev) => prev.filter((d) => d.name !== name));
-    // Update localStorage after deletion
-    const updatedDhikrs = customDhikrs.filter((d) => d.name !== name);
-    if (updatedDhikrs.length === 0) {
-      localStorage.removeItem("custom-dhikrs");
-    } else {
-      localStorage.setItem("custom-dhikrs", JSON.stringify(updatedDhikrs));
-    }
+    setAllDhikrs((prev) => prev.filter((d) => d.name !== name));
 
-    // If deleted dhikr was selected, switch to first preset
-    if (selectedDhikr.name === name) {
-      handleDhikrChange(dhikrPresets[0]);
+    // If deleted dhikr was selected, switch to first available
+    if (selectedDhikr?.name === name && allDhikrs.length > 0) {
+      const firstDhikr = allDhikrs.find((d) => d.name !== name);
+      if (firstDhikr) {
+        handleDhikrChange(firstDhikr);
+      }
     }
   };
-
-  const allDhikrs = [...dhikrPresets, ...customDhikrs];
 
   return (
     <div
@@ -252,53 +230,65 @@ export default function TasbihPage() {
           }`}
         >
           {/* Selected Dhikr Display */}
-          <div className="text-center mb-8">
-            <h2 className="text-6xl font-bold mb-4 text-emerald-500">
-              {selectedDhikr.arabic}
-            </h2>
-            <p className="text-2xl font-semibold mb-2">{selectedDhikr.name}</p>
-            <p
-              className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
-            >
-              {selectedDhikr.meaning}
-            </p>
-          </div>
+          {selectedDhikr ? (
+            <>
+              <div className="text-center mb-8">
+                <h2 className="text-6xl font-bold mb-4 text-emerald-500">
+                  {selectedDhikr.arabic}
+                </h2>
+                <p className="text-2xl font-semibold mb-2">
+                  {selectedDhikr.name}
+                </p>
+                <p
+                  className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                >
+                  {selectedDhikr.translation}
+                </p>
+              </div>
 
-          {/* Progress Bar */}
-          <ProgressBar count={count} target={target} isDark={isDark} />
+              {/* Progress Bar */}
+              <ProgressBar count={count} target={target} isDark={isDark} />
 
-          {/* Counter Display */}
-          <CounterDisplay
-            count={count}
-            target={target}
-            animate={animate}
-            onIncrement={handleIncrement}
-            isDark={isDark}
-          />
+              {/* Counter Display */}
+              <CounterDisplay
+                count={count}
+                target={target}
+                animate={animate}
+                onIncrement={handleIncrement}
+                isDark={isDark}
+              />
 
-          {/* Action Buttons */}
-          <div className="flex gap-4 justify-center">
-            <button
-              onClick={handleReset}
-              className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
-                isDark
-                  ? "bg-red-600 hover:bg-red-700 text-white"
-                  : "bg-red-500 hover:bg-red-600 text-white"
-              }`}
-            >
-              Reset
-            </button>
-            <button
-              onClick={() => setShowHistory(!showHistory)}
-              className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
-                isDark
-                  ? "bg-blue-600 hover:bg-blue-700 text-white"
-                  : "bg-blue-500 hover:bg-blue-600 text-white"
-              }`}
-            >
-              {showHistory ? "Sembunyikan" : "Lihat"} History
-            </button>
-          </div>
+              {/* Action Buttons */}
+              <div className="flex gap-4 justify-center">
+                <button
+                  onClick={handleReset}
+                  className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+                    isDark
+                      ? "bg-red-600 hover:bg-red-700 text-white"
+                      : "bg-red-500 hover:bg-red-600 text-white"
+                  }`}
+                >
+                  Reset
+                </button>
+                <button
+                  onClick={() => setShowHistory(!showHistory)}
+                  className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+                    isDark
+                      ? "bg-blue-600 hover:bg-blue-700 text-white"
+                      : "bg-blue-500 hover:bg-blue-600 text-white"
+                  }`}
+                >
+                  {showHistory ? "Sembunyikan" : "Lihat"} History
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-8">
+              <p className={isDark ? "text-gray-400" : "text-gray-600"}>
+                {isLoading ? "Memuat data..." : "Tidak ada dzikir tersedia"}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Dhikr Selection */}
@@ -311,22 +301,22 @@ export default function TasbihPage() {
             <h3 className="text-xl font-bold">Pilih Dzikir</h3>
             <button
               onClick={() => setShowCustomDhikrModal(true)}
-              className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 flex items-center gap-2"
+              className="px-4 py-2 bg-linear-to-r from-purple-500 to-pink-500 text-white rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 flex items-center gap-2"
             >
               <span>+</span>
               <span>Custom</span>
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {allDhikrs.map((preset, index) => {
-              const isCustom = index >= dhikrPresets.length;
+            {allDhikrs.map((preset) => {
+              const isCustom = !preset.id;
               return (
                 <div key={preset.name} className="relative">
                   <DhikrCard
                     name={preset.name}
                     arabic={preset.arabic}
-                    meaning={preset.meaning}
-                    isSelected={selectedDhikr.name === preset.name}
+                    meaning={preset.translation}
+                    isSelected={selectedDhikr?.name === preset.name}
                     onClick={() => handleDhikrChange(preset)}
                     isDark={isDark}
                   />
@@ -370,7 +360,7 @@ export default function TasbihPage() {
                 onClick={() => handleTargetChange(option)}
                 className={`px-6 py-3 rounded-lg font-semibold transition-all ${
                   target === option
-                    ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg scale-105"
+                    ? "bg-linear-to-r from-emerald-500 to-teal-500 text-white shadow-lg scale-105"
                     : isDark
                       ? "bg-gray-700 hover:bg-gray-600"
                       : "bg-gray-100 hover:bg-gray-200"
@@ -383,7 +373,7 @@ export default function TasbihPage() {
               onClick={() => setShowCustomInput(!showCustomInput)}
               className={`px-6 py-3 rounded-lg font-semibold transition-all ${
                 showCustomInput
-                  ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+                  ? "bg-linear-to-r from-purple-500 to-pink-500 text-white"
                   : isDark
                     ? "bg-gray-700 hover:bg-gray-600"
                     : "bg-gray-100 hover:bg-gray-200"
@@ -410,7 +400,7 @@ export default function TasbihPage() {
               />
               <button
                 onClick={handleCustomTarget}
-                className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg font-semibold hover:from-emerald-600 hover:to-teal-600"
+                className="px-6 py-3 bg-linear-to-r from-emerald-500 to-teal-500 text-white rounded-lg font-semibold hover:from-emerald-600 hover:to-teal-600"
               >
                 Set
               </button>
@@ -553,8 +543,8 @@ export default function TasbihPage() {
         <div
           className={`rounded-2xl shadow-xl p-6 mt-6 ${
             isDark
-              ? "bg-gradient-to-r from-emerald-900 to-teal-900"
-              : "bg-gradient-to-r from-emerald-50 to-teal-50"
+              ? "bg-linear-to-r from-emerald-900 to-teal-900"
+              : "bg-linear-to-r from-emerald-50 to-teal-50"
           }`}
         >
           <h3 className="text-xl font-bold mb-3">💡 Tips Berdzikir</h3>
