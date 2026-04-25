@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { useTheme } from "@/contexts/ThemeContext";
 import DhikrCard from "@/components/tasbih/DhikrCard";
 import CounterDisplay from "@/components/tasbih/CounterDisplay";
@@ -24,12 +25,14 @@ interface DhikrPreset {
   arabic: string;
   translation: string;
   targetDefault: number;
+  userId?: string;
 }
 
 const targetOptions = [33, 99, 100, 1000];
 
 export default function TasbihPage() {
   const { isDark } = useTheme();
+  const { data: session } = useSession();
   const [count, setCount] = useState(0);
   const [allDhikrs, setAllDhikrs] = useState<DhikrPreset[]>([]);
   const [selectedDhikr, setSelectedDhikr] = useState<DhikrPreset | null>(null);
@@ -44,6 +47,65 @@ export default function TasbihPage() {
   const [showCustomDhikrModal, setShowCustomDhikrModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const handleDeleteCustomDhikr = (name: string) => {
+    setAllDhikrs((prev) => prev.filter((d) => d.name !== name));
+
+    // If deleted dhikr was selected, switch to first available
+    if (selectedDhikr?.name === name && allDhikrs.length > 0) {
+      const firstDhikr = allDhikrs.find((d) => d.name !== name);
+      if (firstDhikr) {
+        handleDhikrChange(firstDhikr);
+      }
+    }
+  };
+
+  const handleAddCustomDhikr = async (
+    name: string,
+    arabic: string,
+    translation: string,
+    targetDefault: number,
+  ) => {
+    if (!session?.user?.id) {
+      throw new Error("Anda harus login terlebih dahulu");
+    }
+
+    try {
+      const response = await fetch("/api/dzikir/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          arabic,
+          translation,
+          targetDefault,
+          userId: session.user.id,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Gagal menambahkan dzikir");
+      }
+
+      const newDzikir = await response.json();
+      const newDhikr: DhikrPreset = {
+        id: newDzikir.id,
+        name: newDzikir.name,
+        arabic: newDzikir.arabic,
+        translation: newDzikir.translation,
+        targetDefault: newDzikir.targetDefault,
+        userId: session?.user?.id,
+      };
+
+      setAllDhikrs((prev) => [...prev, newDhikr]);
+    } catch (error) {
+      console.error("Error adding custom dzikir:", error);
+      throw error;
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -56,6 +118,7 @@ export default function TasbihPage() {
           arabic: d.arabic,
           translation: d.translation,
           targetDefault: d.targetDefault,
+          userId: d.userId,
         }));
 
         setAllDhikrs(apiDhikrs);
@@ -73,7 +136,6 @@ export default function TasbihPage() {
     fetchData();
   }, []);
 
-  // Load records from localStorage (only records, not dzikirs)
   useEffect(() => {
     const savedRecords = localStorage.getItem("tasbih-records");
     if (savedRecords) {
@@ -81,7 +143,6 @@ export default function TasbihPage() {
     }
   }, []);
 
-  // Save records to localStorage
   useEffect(() => {
     if (records.length > 0) {
       localStorage.setItem("tasbih-records", JSON.stringify(records));
@@ -180,33 +241,6 @@ export default function TasbihPage() {
     if (value && value > 0 && value <= 10000) {
       handleTargetChange(value);
       setCustomTarget("");
-    }
-  };
-
-  const handleAddCustomDhikr = (
-    name: string,
-    arabic: string,
-    translation: string,
-    targetDefault: number,
-  ) => {
-    const newDhikr: DhikrPreset = {
-      name,
-      arabic,
-      translation,
-      targetDefault,
-    };
-    setAllDhikrs((prev) => [...prev, newDhikr]);
-  };
-
-  const handleDeleteCustomDhikr = (name: string) => {
-    setAllDhikrs((prev) => prev.filter((d) => d.name !== name));
-
-    // If deleted dhikr was selected, switch to first available
-    if (selectedDhikr?.name === name && allDhikrs.length > 0) {
-      const firstDhikr = allDhikrs.find((d) => d.name !== name);
-      if (firstDhikr) {
-        handleDhikrChange(firstDhikr);
-      }
     }
   };
 

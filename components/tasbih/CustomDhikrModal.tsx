@@ -10,7 +10,7 @@ interface CustomDhikrModalProps {
     arabic: string,
     meaning: string,
     target: number,
-  ) => void;
+  ) => Promise<void>;
   isDark: boolean;
 }
 
@@ -24,18 +24,28 @@ export default function CustomDhikrModal({
   const [arabic, setArabic] = useState("");
   const [meaning, setMeaning] = useState("");
   const [target, setTarget] = useState("33");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (name && arabic && meaning && target) {
-      onSave(name, arabic, meaning, parseInt(target));
-      setName("");
-      setArabic("");
-      setMeaning("");
-      setTarget("33");
-      onClose();
+      setIsLoading(true);
+      setError("");
+      try {
+        await onSave(name, arabic, meaning, parseInt(target));
+        setName("");
+        setArabic("");
+        setMeaning("");
+        setTarget("33");
+        onClose();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Gagal menyimpan dzikir");
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -57,6 +67,11 @@ export default function CustomDhikrModal({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="p-3 bg-red-500 text-white rounded-lg text-sm">
+              {error}
+            </div>
+          )}
           <div>
             <label className="block text-sm font-semibold mb-2">
               Nama Dzikir
@@ -70,6 +85,7 @@ export default function CustomDhikrModal({
                 isDark ? "bg-gray-700 text-white" : "bg-gray-100 text-gray-900"
               } focus:outline-none focus:ring-2 focus:ring-emerald-500`}
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -86,6 +102,7 @@ export default function CustomDhikrModal({
                 isDark ? "bg-gray-700 text-white" : "bg-gray-100 text-gray-900"
               } focus:outline-none focus:ring-2 focus:ring-emerald-500`}
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -100,6 +117,7 @@ export default function CustomDhikrModal({
                 isDark ? "bg-gray-700 text-white" : "bg-gray-100 text-gray-900"
               } focus:outline-none focus:ring-2 focus:ring-emerald-500`}
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -118,6 +136,7 @@ export default function CustomDhikrModal({
               min="1"
               max="10000"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -125,19 +144,23 @@ export default function CustomDhikrModal({
             <button
               type="button"
               onClick={onClose}
+              disabled={isLoading}
               className={`flex-1 px-6 py-3 rounded-lg font-semibold transition-colors ${
                 isDark
                   ? "bg-gray-700 hover:bg-gray-600"
                   : "bg-gray-200 hover:bg-gray-300"
-              }`}
+              } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               Batal
             </button>
             <button
               type="submit"
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg font-semibold hover:from-emerald-600 hover:to-teal-600"
+              disabled={isLoading}
+              className={`flex-1 px-6 py-3 bg-linear-to-r from-emerald-500 to-teal-500 text-white rounded-lg font-semibold hover:from-emerald-600 hover:to-teal-600 ${
+                isLoading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
-              Simpan
+              {isLoading ? "Menyimpan..." : "Simpan"}
             </button>
           </div>
         </form>
