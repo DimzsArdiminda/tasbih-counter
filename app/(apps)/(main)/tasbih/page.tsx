@@ -35,6 +35,7 @@ export default function TasbihPage() {
   const { data: session } = useSession();
   const [count, setCount] = useState(0);
   const [allDhikrs, setAllDhikrs] = useState<DhikrPreset[]>([]);
+  const [dzikirById, setDzikirById] = useState<DhikrPreset[]>([]);
   const [selectedDhikr, setSelectedDhikr] = useState<DhikrPreset | null>(null);
   const [target, setTarget] = useState(33);
   const [customTarget, setCustomTarget] = useState("");
@@ -110,7 +111,16 @@ export default function TasbihPage() {
     const fetchData = async () => {
       try {
         const response = await fetch("/api/dzikir/all");
+        if (!response.ok) {
+          throw new Error("Failed to fetch dzikir");
+        }
         const data = await response.json();
+
+        if (!Array.isArray(data)) {
+          console.error("Data is not an array:", data);
+          setAllDhikrs([]);
+          return;
+        }
 
         const apiDhikrs: DhikrPreset[] = data.map((d: DhikrPreset) => ({
           id: d.id,
@@ -129,12 +139,50 @@ export default function TasbihPage() {
         }
       } catch (error) {
         console.error("Error fetching dzikir:", error);
+        setAllDhikrs([]);
       } finally {
         setIsLoading(false);
       }
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!session?.user?.id) return;
+
+      try {
+        const response = await fetch("/api/dzikir/byid");
+        if (!response.ok) {
+          throw new Error("Failed to fetch user dzikir");
+        }
+        const data = await response.json();
+
+        if (!Array.isArray(data)) {
+          console.error("Data is not an array:", data);
+          setDzikirById([]);
+          return;
+        }
+
+        const apiDhikrs: DhikrPreset[] = data.map((d: DhikrPreset) => ({
+          id: d.id,
+          name: d.name,
+          arabic: d.arabic,
+          translation: d.translation,
+          targetDefault: d.targetDefault,
+          userId: d.userId,
+        }));
+
+        setDzikirById(apiDhikrs);
+      } catch (error) {
+        console.error("Error fetching user dzikir:", error);
+        setDzikirById([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, [session?.user?.id]);
 
   useEffect(() => {
     const savedRecords = localStorage.getItem("tasbih-records");
@@ -333,6 +381,45 @@ export default function TasbihPage() {
         >
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-bold">Pilih Dzikir</h3>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {allDhikrs.map((preset) => {
+              const isCustom = !preset.id;
+              return (
+                <div key={preset.name} className="relative">
+                  <DhikrCard
+                    name={preset.name}
+                    arabic={preset.arabic}
+                    meaning={preset.translation}
+                    isSelected={selectedDhikr?.name === preset.name}
+                    onClick={() => handleDhikrChange(preset)}
+                    isDark={isDark}
+                  />
+                  {isCustom && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteCustomDhikr(preset.name);
+                      }}
+                      className="absolute top-2 right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full text-xs flex items-center justify-center"
+                      title="Hapus dzikir custom"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div
+          className={`rounded-2xl shadow-xl p-6 mb-6 ${
+            isDark ? "bg-gray-800" : "bg-white"
+          }`}
+        >
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Add Dzikir</h3>
             <button
               onClick={() => setShowCustomDhikrModal(true)}
               className="px-4 py-2 bg-linear-to-r from-purple-500 to-pink-500 text-white rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 flex items-center gap-2"
@@ -342,7 +429,7 @@ export default function TasbihPage() {
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {allDhikrs.map((preset) => {
+            {dzikirById.map((preset) => {
               const isCustom = !preset.id;
               return (
                 <div key={preset.name} className="relative">
