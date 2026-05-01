@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    CheckAuth();
+    await CheckAuth();
     const session = await auth();
 
     if (!session || !session.user?.id) {

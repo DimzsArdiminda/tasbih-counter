@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/helper/authoptn";
 
-export const { auth, handlers, signIn, signOut } = NextAuth(authOptions);
+export const auth = () => getServerSession(authOptions);
