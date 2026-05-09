@@ -9,6 +9,8 @@ import CounterDisplay from "@/components/tasbih/CounterDisplay";
 import HistoryCard from "@/components/tasbih/HistoryCard";
 import SettingsToggle from "@/components/tasbih/SettingsToggle";
 import CustomDhikrModal from "@/components/tasbih/CustomDhikrModal";
+import TargetSelection from "@/components/tasbih/TargetSelection";
+import TipsSelection from "@/components/tasbih/TipsSelection";
 
 interface DhikrRecord {
   id: string;
@@ -328,11 +330,6 @@ export default function TasbihPage() {
         </div>
 
         {/* Main Counter Section */}
-        <div
-          className={`rounded-2xl shadow-2xl p-8 mb-6 ${
-            isDark ? "bg-gray-800" : "bg-white"
-          }`}
-        >
           <CounterDisplay
             count={count}
             target={target}
@@ -344,7 +341,6 @@ export default function TasbihPage() {
             showHistory={showHistory}
             onToggleHistory={() => setShowHistory(!showHistory)}
           />
-        </div>
 
         {/* Dhikr Selection with Tabs */}
         <DhikrCard
@@ -368,220 +364,39 @@ export default function TasbihPage() {
         />
 
         {/* Target Selection */}
-        <div
-          className={`rounded-2xl shadow-xl p-6 mb-6 ${
-            isDark ? "bg-gray-800" : "bg-white"
-          }`}
-        >
-          <h3 className="text-xl font-bold mb-4">Target Hitungan</h3>
-          <div className="flex flex-wrap gap-3">
-            {targetOptions.map((option) => (
-              <button
-                key={option}
-                onClick={() => handleTargetChange(option)}
-                className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-                  target === option
-                    ? "bg-linear-to-r from-emerald-500 to-teal-500 text-white shadow-lg scale-105"
-                    : isDark
-                      ? "bg-gray-700 hover:bg-gray-600"
-                      : "bg-gray-100 hover:bg-gray-200"
-                }`}
-              >
-                {option}
-              </button>
-            ))}
-            <button
-              onClick={() => setShowCustomInput(!showCustomInput)}
-              className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-                showCustomInput
-                  ? "bg-linear-to-r from-purple-500 to-pink-500 text-white"
-                  : isDark
-                    ? "bg-gray-700 hover:bg-gray-600"
-                    : "bg-gray-100 hover:bg-gray-200"
-              }`}
-            >
-              Custom
-            </button>
-          </div>
-
-          {showCustomInput && (
-            <div className="mt-4 flex gap-2">
-              <input
-                type="number"
-                value={customTarget}
-                onChange={(e) => setCustomTarget(e.target.value)}
-                placeholder="Masukkan target (1-10000)"
-                className={`flex-1 px-4 py-3 rounded-lg ${
-                  isDark
-                    ? "bg-gray-700 text-white"
-                    : "bg-gray-100 text-gray-900"
-                } focus:outline-none focus:ring-2 focus:ring-emerald-500`}
-                min="1"
-                max="10000"
-              />
-              <button
-                onClick={handleCustomTarget}
-                className="px-6 py-3 bg-linear-to-r from-emerald-500 to-teal-500 text-white rounded-lg font-semibold hover:from-emerald-600 hover:to-teal-600"
-              >
-                Set
-              </button>
-            </div>
-          )}
-        </div>
+        <TargetSelection
+          target={target}
+          customTarget={customTarget}
+          showCustomInput={showCustomInput}
+          isDark={isDark}
+          targetOptions={targetOptions}
+          onTargetChange={handleTargetChange}
+          onShowCustomInput={setShowCustomInput}
+          onCustomTargetChange={setCustomTarget}
+          onSetCustomTarget={handleCustomTarget}
+        />
 
         {/* Settings */}
-        <div
-          className={`rounded-2xl shadow-xl p-6 mb-6 ${
-            isDark ? "bg-gray-800" : "bg-white"
-          }`}
-        >
-          <h3 className="text-xl font-bold mb-4">Pengaturan</h3>
-          <div className="space-y-3">
-            <SettingsToggle
-              label="Sound Effect"
-              checked={soundEnabled}
-              onChange={setSoundEnabled}
-            />
-            <SettingsToggle
-              label="Vibration"
-              checked={vibrationEnabled}
-              onChange={setVibrationEnabled}
-            />
-          </div>
-        </div>
+        <SettingsToggle
+          soundEnabled={soundEnabled}
+          vibrationEnabled={vibrationEnabled}
+          isDark={isDark}
+          onSoundChange={setSoundEnabled}
+          onVibrationChange={setVibrationEnabled}
+        />
 
         {/* History Section */}
         {showHistory && (
-          <div
-            className={`rounded-2xl shadow-xl p-6 ${
-              isDark ? "bg-gray-800" : "bg-white"
-            }`}
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">History Dzikir</h3>
-              {records.length > 0 && (
-                <button
-                  onClick={clearAllRecords}
-                  className="text-red-500 hover:text-red-600 text-sm font-semibold"
-                >
-                  Hapus Semua
-                </button>
-              )}
-            </div>
-
-            {records.length === 0 ? (
-              <div className="text-center py-8">
-                <p className={isDark ? "text-gray-400" : "text-gray-600"}>
-                  Belum ada history. Mulai berdzikir sekarang!
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-3 max-h-96 overflow-y-auto">
-                {records.map((record) => (
-                  <HistoryCard
-                    key={record.id}
-                    record={record}
-                    onDelete={deleteRecord}
-                    isDark={isDark}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Statistics */}
-            {records.length > 0 && (
-              <div className="mt-6 pt-6 border-t border-gray-600">
-                <h4 className="font-bold mb-3">Statistik</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div
-                    className={`p-4 rounded-lg text-center ${
-                      isDark ? "bg-gray-700" : "bg-gray-50"
-                    }`}
-                  >
-                    <div className="text-2xl font-bold text-emerald-500">
-                      {records.length}
-                    </div>
-                    <div
-                      className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
-                    >
-                      Total Sesi
-                    </div>
-                  </div>
-                  <div
-                    className={`p-4 rounded-lg text-center ${
-                      isDark ? "bg-gray-700" : "bg-gray-50"
-                    }`}
-                  >
-                    <div className="text-2xl font-bold text-emerald-500">
-                      {records.filter((r) => r.completed).length}
-                    </div>
-                    <div
-                      className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
-                    >
-                      Selesai
-                    </div>
-                  </div>
-                  <div
-                    className={`p-4 rounded-lg text-center ${
-                      isDark ? "bg-gray-700" : "bg-gray-50"
-                    }`}
-                  >
-                    <div className="text-2xl font-bold text-emerald-500">
-                      {records.reduce((sum, r) => sum + r.count, 0)}
-                    </div>
-                    <div
-                      className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
-                    >
-                      Total Dzikir
-                    </div>
-                  </div>
-                  <div
-                    className={`p-4 rounded-lg text-center ${
-                      isDark ? "bg-gray-700" : "bg-gray-50"
-                    }`}
-                  >
-                    <div className="text-2xl font-bold text-emerald-500">
-                      {Math.round(
-                        (records.filter((r) => r.completed).length /
-                          records.length) *
-                          100,
-                      )}
-                      %
-                    </div>
-                    <div
-                      className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
-                    >
-                      Tingkat Selesai
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          <HistoryCard
+            records={records}
+            isDark={isDark}
+            onDelete={deleteRecord}
+            onClearAll={clearAllRecords}
+          />
         )}
 
         {/* Tips Section */}
-        <div
-          className={`rounded-2xl shadow-xl p-6 mt-6 ${
-            isDark
-              ? "bg-linear-to-r from-emerald-900 to-teal-900"
-              : "bg-linear-to-r from-emerald-50 to-teal-50"
-          }`}
-        >
-          <h3 className="text-xl font-bold mb-3">💡 Tips Berdzikir</h3>
-          <ul
-            className={`space-y-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}
-          >
-            <li>• Berdzikirlah dengan khusyu dan penuh konsentrasi</li>
-            <li>• Pahami makna dari dzikir yang Anda ucapkan</li>
-            <li>• Rutinkan berdzikir setelah sholat</li>
-            <li>
-              • Dzikir Subhanallah, Alhamdulillah, dan Allahu Akbar
-              masing-masing 33x setelah sholat adalah amalan yang sangat
-              dianjurkan
-            </li>
-          </ul>
-        </div>
+        <TipsSelection isDark={isDark} />
       </div>
     </div>
   );

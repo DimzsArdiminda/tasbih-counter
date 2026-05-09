@@ -35,6 +35,11 @@ export default function CounterDisplay({
 }: CounterDisplayProps) {
   return (
     <>
+    <div
+      className={`rounded-2xl shadow-2xl p-8 mb-6 ${
+        isDark ? "bg-gray-800" : "bg-white"
+      }`}
+    >
       {/* Selected Dhikr Display */}
       {selectedDhikr ? (
         <>
@@ -116,6 +121,8 @@ export default function CounterDisplay({
           </p>
         </div>
       )}
+      </div>
+      
     </>
   );
 }
