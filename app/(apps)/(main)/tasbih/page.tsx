@@ -11,6 +11,8 @@ import SettingsToggle from "@/components/tasbih/SettingsToggle";
 import CustomDhikrModal from "@/components/tasbih/CustomDhikrModal";
 import TargetSelection from "@/components/tasbih/TargetSelection";
 import TipsSelection from "@/components/tasbih/TipsSelection";
+import { useRouter } from "next/navigation";
+
 
 interface DhikrRecord {
   id: string;
@@ -51,6 +53,7 @@ export default function TasbihPage() {
   const [showCustomDhikrModal, setShowCustomDhikrModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"all" | "custom">("all");
+  const router = useRouter()
 
   const handleAddCustomDhikr = async (
     name: string,
@@ -93,6 +96,7 @@ export default function TasbihPage() {
       };
 
       setAllDhikrs((prev) => [...prev, newDhikr]);
+      router.refresh()
     } catch (error) {
       console.error("Error adding custom dzikir:", error);
       throw error;

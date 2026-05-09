@@ -165,12 +165,12 @@ export default function DhikrCard({
     }
 
     return data.map((preset) => (
-      <div key={preset.name} className="relative group">
+      <div key={preset.id} className="relative group">
         <DhikrCardItem
           name={preset.name}
           arabic={preset.arabic}
           meaning={preset.translation}
-          isSelected={selectedDhikr?.name === preset.name}
+          isSelected={selectedDhikr?.id === preset.id}
           onClick={() => onDhikrChange(preset)}
           isDark={isDark}
         />
