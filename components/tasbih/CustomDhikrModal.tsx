@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useAlert } from "@/hooks/useAlert";
 
 interface CustomDhikrModalProps {
   isOpen: boolean;
@@ -20,12 +21,12 @@ export default function CustomDhikrModal({
   onSave,
   isDark,
 }: CustomDhikrModalProps) {
+  const { success, error: showError } = useAlert();
   const [name, setName] = useState("");
   const [arabic, setArabic] = useState("");
   const [meaning, setMeaning] = useState("");
   const [target, setTarget] = useState("33");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
 
   if (!isOpen) return null;
 
@@ -33,16 +34,19 @@ export default function CustomDhikrModal({
     e.preventDefault();
     if (name && arabic && meaning && target) {
       setIsLoading(true);
-      setError("");
       try {
         await onSave(name, arabic, meaning, parseInt(target));
+        success("Berhasil", "Dzikir custom berhasil ditambahkan");
         setName("");
         setArabic("");
         setMeaning("");
         setTarget("33");
         onClose();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Gagal menyimpan dzikir");
+        showError(
+          "Gagal Menambahkan",
+          err instanceof Error ? err.message : "Gagal menyimpan dzikir",
+        );
       } finally {
         setIsLoading(false);
       }
@@ -67,11 +71,6 @@ export default function CustomDhikrModal({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <div className="p-3 bg-red-500 text-white rounded-lg text-sm">
-              {error}
-            </div>
-          )}
           <div>
             <label className="block text-sm font-semibold mb-2">
               Nama Dzikir

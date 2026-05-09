@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useAlert } from "@/hooks/useAlert";
 import DhikrCard from "@/components/tasbih/DhikrCard";
 import CounterDisplay from "@/components/tasbih/CounterDisplay";
 import ProgressBar from "@/components/tasbih/ProgressBar";
@@ -33,6 +34,7 @@ const targetOptions = [33, 99, 100, 1000];
 export default function TasbihPage() {
   const { isDark } = useTheme();
   const { data: session } = useSession();
+  const { success, error, confirm } = useAlert();
   const [count, setCount] = useState(0);
   const [allDhikrs, setAllDhikrs] = useState<DhikrPreset[]>([]);
   const [dzikirById, setDzikirById] = useState<DhikrPreset[]>([]);
@@ -215,8 +217,9 @@ export default function TasbihPage() {
       saveRecord(true);
       // Show completion message
       setTimeout(() => {
-        alert(
-          `Alhamdulillah! Anda telah menyelesaikan ${target}x ${selectedDhikr.name}`,
+        success(
+          "Alhamdulillah!",
+          `Anda telah menyelesaikan ${target}x ${selectedDhikr.name}`,
         );
       }, 100);
     }
@@ -224,14 +227,18 @@ export default function TasbihPage() {
 
   const handleReset = () => {
     if (count > 0) {
-      const confirmReset = confirm(
+      confirm(
+        "Reset Dzikir?",
         "Apakah Anda ingin menyimpan progress ini sebelum reset?",
-      );
-      if (confirmReset) {
-        saveRecord(false);
-      }
+      ).then((result) => {
+        if (result.isConfirmed) {
+          saveRecord(false);
+        }
+        setCount(0);
+      });
+    } else {
+      setCount(0);
     }
-    setCount(0);
   };
 
   const saveRecord = (completed: boolean) => {
@@ -253,10 +260,15 @@ export default function TasbihPage() {
   };
 
   const clearAllRecords = () => {
-    if (confirm("Hapus semua history?")) {
-      setRecords([]);
-      localStorage.removeItem("tasbih-records");
-    }
+    confirm("Hapus Semua History?", "Tindakan ini tidak dapat dibatalkan").then(
+      (result) => {
+        if (result.isConfirmed) {
+          setRecords([]);
+          localStorage.removeItem("tasbih-records");
+          success("Berhasil", "Semua history telah dihapus");
+        }
+      },
+    );
   };
 
   const handleDhikrChange = (preset: DhikrPreset) => {
@@ -292,14 +304,14 @@ export default function TasbihPage() {
       if (response.ok) {
         setDzikirById((prev) => prev.filter((d) => d.id !== id));
         setAllDhikrs((prev) => prev.filter((d) => d.id !== id));
-        alert("Dzikir berhasil dihapus");
+        success("Berhasil", "Dzikir berhasil dihapus");
       } else {
-        const error = await response.json();
-        alert(`Gagal menghapus: ${error.message}`);
+        const errorData = await response.json();
+        error("Gagal Menghapus", errorData.message);
       }
-    } catch (error) {
-      console.error("Error deleting dzikir:", error);
-      alert("Terjadi kesalahan saat menghapus dzikir");
+    } catch (err) {
+      console.error("Error deleting dzikir:", err);
+      error("Terjadi Kesalahan", "Gagal menghapus dzikir. Silakan coba lagi");
     }
   };
 
