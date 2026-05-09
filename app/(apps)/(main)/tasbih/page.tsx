@@ -47,18 +47,7 @@ export default function TasbihPage() {
   const [animate, setAnimate] = useState(false);
   const [showCustomDhikrModal, setShowCustomDhikrModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
-  const handleDeleteCustomDhikr = (name: string) => {
-    setAllDhikrs((prev) => prev.filter((d) => d.name !== name));
-
-    // If deleted dhikr was selected, switch to first available
-    if (selectedDhikr?.name === name && allDhikrs.length > 0) {
-      const firstDhikr = allDhikrs.find((d) => d.name !== name);
-      if (firstDhikr) {
-        handleDhikrChange(firstDhikr);
-      }
-    }
-  };
+  const [activeTab, setActiveTab] = useState<"all" | "custom">("all");
 
   const handleAddCustomDhikr = async (
     name: string,
@@ -292,6 +281,28 @@ export default function TasbihPage() {
     }
   };
 
+  const deleteDzikir = async (id: string | undefined) => {
+    if (!id) return;
+
+    try {
+      const response = await fetch(`/api/dzikir/byid/delete/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setDzikirById((prev) => prev.filter((d) => d.id !== id));
+        setAllDhikrs((prev) => prev.filter((d) => d.id !== id));
+        alert("Dzikir berhasil dihapus");
+      } else {
+        const error = await response.json();
+        alert(`Gagal menghapus: ${error.message}`);
+      }
+    } catch (error) {
+      console.error("Error deleting dzikir:", error);
+      alert("Terjadi kesalahan saat menghapus dzikir");
+    }
+  };
+
   return (
     <div
       className={`min-h-screen py-8 ${isDark ? "text-white" : "text-gray-900"}`}
@@ -373,90 +384,136 @@ export default function TasbihPage() {
           )}
         </div>
 
-        {/* Dhikr Selection */}
+        {/* Dhikr Selection with Tabs */}
         <div
           className={`rounded-2xl shadow-xl p-6 mb-6 ${
             isDark ? "bg-gray-800" : "bg-white"
           }`}
         >
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-bold">Pilih Dzikir</h3>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {allDhikrs.map((preset) => {
-              const isCustom = !preset.id;
-              return (
-                <div key={preset.name} className="relative">
-                  <DhikrCard
-                    name={preset.name}
-                    arabic={preset.arabic}
-                    meaning={preset.translation}
-                    isSelected={selectedDhikr?.name === preset.name}
-                    onClick={() => handleDhikrChange(preset)}
-                    isDark={isDark}
-                  />
-                  {isCustom && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteCustomDhikr(preset.name);
-                      }}
-                      className="absolute top-2 right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full text-xs flex items-center justify-center"
-                      title="Hapus dzikir custom"
-                    >
-                      ×
-                    </button>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div
-          className={`rounded-2xl shadow-xl p-6 mb-6 ${
-            isDark ? "bg-gray-800" : "bg-white"
-          }`}
-        >
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-bold">Add Dzikir</h3>
+          {/* Tab Header with Underline */}
+          <div
+            className="flex justify-between items-center mb-6 border-b"
+            style={
+              isDark
+                ? { borderColor: "#4B556300" }
+                : { borderColor: "#E5E7EB00" }
+            }
+          >
+            <div className="flex gap-8">
+              <button
+                onClick={() => setActiveTab("all")}
+                className={`pb-3 font-semibold transition-colors relative ${
+                  activeTab === "all"
+                    ? isDark
+                      ? "text-emerald-500"
+                      : "text-emerald-600"
+                    : isDark
+                      ? "text-gray-400"
+                      : "text-gray-600"
+                }`}
+              >
+                Semua Dzikir
+                {activeTab === "all" && (
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r from-emerald-500 to-teal-500"></div>
+                )}
+              </button>
+              <button
+                onClick={() => setActiveTab("custom")}
+                className={`pb-3 font-semibold transition-colors relative ${
+                  activeTab === "custom"
+                    ? isDark
+                      ? "text-emerald-500"
+                      : "text-emerald-600"
+                    : isDark
+                      ? "text-gray-400"
+                      : "text-gray-600"
+                }`}
+              >
+                Dzikir Saya
+                {activeTab === "custom" && (
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r from-emerald-500 to-teal-500"></div>
+                )}
+              </button>
+            </div>
             <button
               onClick={() => setShowCustomDhikrModal(true)}
-              className="px-4 py-2 bg-linear-to-r from-purple-500 to-pink-500 text-white rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 flex items-center gap-2"
+              className="px-4 py-2 bg-linear-to-r from-purple-500 to-pink-500 text-white rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 flex items-center gap-2 mb-3"
             >
               <span>+</span>
               <span>Custom</span>
             </button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {dzikirById.map((preset) => {
-              const isCustom = !preset.id;
-              return (
-                <div key={preset.name} className="relative">
-                  <DhikrCard
-                    name={preset.name}
-                    arabic={preset.arabic}
-                    meaning={preset.translation}
-                    isSelected={selectedDhikr?.name === preset.name}
-                    onClick={() => handleDhikrChange(preset)}
-                    isDark={isDark}
-                  />
-                  {isCustom && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteCustomDhikr(preset.name);
-                      }}
-                      className="absolute top-2 right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full text-xs flex items-center justify-center"
-                      title="Hapus dzikir custom"
-                    >
-                      ×
-                    </button>
-                  )}
+
+          {/* Tab Content */}
+          {activeTab === "all" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {allDhikrs.map((preset) => {
+                const isCustom = !preset.id;
+                return (
+                  <div key={preset.name} className="relative">
+                    <DhikrCard
+                      name={preset.name}
+                      arabic={preset.arabic}
+                      meaning={preset.translation}
+                      isSelected={selectedDhikr?.name === preset.name}
+                      onClick={() => handleDhikrChange(preset)}
+                      isDark={isDark}
+                    />
+                    {isCustom && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteDzikir(preset.id);
+                        }}
+                        className="absolute top-2 right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full text-xs flex items-center justify-center"
+                        title="Hapus dzikir custom"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {activeTab === "custom" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {dzikirById.length > 0 ? (
+                dzikirById.map((preset) => {
+                  return (
+                    <div key={preset.name} className="relative">
+                      <DhikrCard
+                        name={preset.name}
+                        arabic={preset.arabic}
+                        meaning={preset.translation}
+                        isSelected={selectedDhikr?.name === preset.name}
+                        onClick={() => handleDhikrChange(preset)}
+                        isDark={isDark}
+                      />
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteDzikir(preset.id);
+                        }}
+                        className="absolute top-2 right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full text-xs flex items-center justify-center"
+                        title="Hapus dzikir custom"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="col-span-full text-center py-8">
+                  <p className={isDark ? "text-gray-400" : "text-gray-600"}>
+                    Belum ada dzikir custom. Buat yang baru dengan klik tombol
+                    &quot; Custom &quot; di atas
+                  </p>
                 </div>
-              );
-            })}
-          </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Custom Dhikr Modal */}
