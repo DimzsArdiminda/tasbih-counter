@@ -43,7 +43,7 @@ export default function SettingsToggle({
 }: SettingsProps) {
   return (
     <div
-      className={`rounded-2xl shadow-xl p-6 mb-6 ${
+      className={`rounded-2xl shadow-xl p-6 mb-6 mt-6 ${
         isDark ? "bg-gray-800" : "bg-white"
       }`}
     >

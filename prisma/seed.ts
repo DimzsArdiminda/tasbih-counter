@@ -2,6 +2,29 @@ import { prisma } from "../lib/prisma";
 import bcrypt from "bcryptjs";
 
 async function main() {
+  const userTarget1 = await prisma.countTarget.create({
+    data: {
+      target: 33,
+    }
+  })
+
+  const userTarget2 = await prisma.countTarget.create({
+    data: {
+      target: 99,
+    }
+  })
+  
+  const userTarget3 = await prisma.countTarget.create({
+    data: {
+      target: 100,
+    }
+  })
+
+  const userTarget4 = await prisma.countTarget.create({
+    data: {
+      target: 1000,
+    }
+  })
 
   const user1 = await prisma.user.create({
     data: {
@@ -67,6 +90,7 @@ async function main() {
 
   console.log("Seed data created:", dzikir1, dzikir2, dzikir3, dzikir4, dzikir5, dzikir6);
   console.log("Seed data created:", user1);
+  console.log("Seed data created:", userTarget1, userTarget2, userTarget3, userTarget4);
 
 }
 

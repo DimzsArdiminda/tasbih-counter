@@ -334,17 +334,17 @@ export default function TasbihPage() {
         </div>
 
         {/* Main Counter Section */}
-          <CounterDisplay
-            count={count}
-            target={target}
-            animate={animate}
-            onIncrement={handleIncrement}
-            isDark={isDark}
-            selectedDhikr={selectedDhikr}
-            onReset={handleReset}
-            showHistory={showHistory}
-            onToggleHistory={() => setShowHistory(!showHistory)}
-          />
+        <CounterDisplay
+          count={count}
+          target={target}
+          animate={animate}
+          onIncrement={handleIncrement}
+          isDark={isDark}
+          selectedDhikr={selectedDhikr}
+          onReset={handleReset}
+          showHistory={showHistory}
+          onToggleHistory={() => setShowHistory(!showHistory)}
+        />
 
         {/* Dhikr Selection with Tabs */}
         <DhikrCard
@@ -380,15 +380,6 @@ export default function TasbihPage() {
           onSetCustomTarget={handleCustomTarget}
         />
 
-        {/* Settings */}
-        <SettingsToggle
-          soundEnabled={soundEnabled}
-          vibrationEnabled={vibrationEnabled}
-          isDark={isDark}
-          onSoundChange={setSoundEnabled}
-          onVibrationChange={setVibrationEnabled}
-        />
-
         {/* History Section */}
         {showHistory && (
           <HistoryCard
@@ -398,6 +389,15 @@ export default function TasbihPage() {
             onClearAll={clearAllRecords}
           />
         )}
+
+        {/* Settings */}
+        <SettingsToggle
+          soundEnabled={soundEnabled}
+          vibrationEnabled={vibrationEnabled}
+          isDark={isDark}
+          onSoundChange={setSoundEnabled}
+          onVibrationChange={setVibrationEnabled}
+        />
 
         {/* Tips Section */}
         <TipsSelection isDark={isDark} />
