@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { CheckAuth } from "@/helper/session";
+import session from "@/app/session";
 
 interface AddDzikirRequest {
-    name: string;
-    arabic: string;
-    translation: string;
-    userId? : string;
-    targetDefault: number;
+  name: string;
+  arabic: string;
+  translation: string;
+  userId?: string;
+  targetDefault: number;
 }
 
 export async function POST(request: NextRequest) {
@@ -16,20 +17,20 @@ export async function POST(request: NextRequest) {
     const body: AddDzikirRequest = await request.json();
 
     if (
-        !body.name ||
-        !body.arabic ||
-        !body.translation ||
-        body.targetDefault === undefined
+      !body.name ||
+      !body.arabic ||
+      !body.translation ||
+      body.targetDefault === undefined
     ) {
-        return NextResponse.json(
-            { error: "Missing required fields" },
-            { status: 400 },
-        );
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 },
+      );
     }
 
-    // Create dzikir with userId
+    // Create dzikir with userId from server session to avoid FK mismatch
     const dzikir = await prisma.dzikir.create({
-    data: {
+      data: {
         name: body.name,
         arabic: body.arabic,
         translation: body.translation,
@@ -37,12 +38,12 @@ export async function POST(request: NextRequest) {
         userId: body.userId,
         },
     });
-        return NextResponse.json(dzikir, { status: 201 });
-    } catch (error) {
-        console.error("Error adding dzikir:", error);
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: 500 },
-        );
-    }
+    return NextResponse.json(dzikir, { status: 201 });
+  } catch (error) {
+    console.error("Error adding dzikir:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
 }

@@ -1,4 +1,6 @@
+"use client";
 import React from "react";
+import { useAlert } from "@/hooks/useAlert";
 
 interface DhikrPreset {
   id?: string;
@@ -131,6 +133,8 @@ export default function DhikrCard({
   onShowCustomModal,
   onDeleteDzikir,
 }: DhikrSelectionProps) {
+  const { confirm } = useAlert();
+
   const renderCards = (data: DhikrPreset[], isCustomTab = false) => {
     if (data.length === 0) {
       return (
@@ -180,7 +184,11 @@ export default function DhikrCard({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onDeleteDzikir(preset.id);
+              confirm("Hapus Dzikir", "Yakin ingin menghapus dzikir ini?").then(
+                (res) => {
+                  if (res.isConfirmed) onDeleteDzikir(preset.id);
+                },
+              );
             }}
             className="
               absolute
@@ -198,6 +206,8 @@ export default function DhikrCard({
               shadow-lg
               opacity-0
               group-hover:opacity-100
+              z-20
+              pointer-events-auto
               transition-all
               duration-200
             "
