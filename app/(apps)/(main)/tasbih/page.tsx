@@ -306,17 +306,38 @@ export default function TasbihPage() {
   }, [session?.user?.id]);
 
   useEffect(() => {
-    const savedRecords = localStorage.getItem("tasbih-records");
-    if (savedRecords) {
-      setRecords(JSON.parse(savedRecords));
-    }
-  }, []);
+    const fetchHistory = async () => {
+      if (!session?.user?.id) {
+        setRecords([]);
+        return;
+      }
 
-  useEffect(() => {
-    if (records.length > 0) {
-      localStorage.setItem("tasbih-records", JSON.stringify(records));
-    }
-  }, [records]);
+      try {
+        const response = await fetch("/api/dzikir/history");
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch dzikir history");
+        }
+
+        const data = await response.json();
+
+        if (!Array.isArray(data)) {
+          console.error("History data is not an array:", data);
+          setRecords([]);
+          return;
+        }
+
+        setRecords(data);
+      } catch (error) {
+        console.error("Error fetching dzikir history:", error);
+        setRecords([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, [session?.user?.id]);
 
   const playSound = () => {
     if (soundEnabled) {
@@ -344,7 +365,9 @@ export default function TasbihPage() {
 
     if (count + 1 === target) {
       // Save completed record
-      saveRecord(true);
+      void saveRecord(true).catch((err) => {
+        console.error("Error saving completed dzikir history:", err);
+      });
       // Show completion message
       setTimeout(() => {
         success(
@@ -362,7 +385,9 @@ export default function TasbihPage() {
         "Apakah Anda ingin menyimpan progress ini sebelum reset?",
       ).then((result) => {
         if (result.isConfirmed) {
-          saveRecord(false);
+          void saveRecord(false).catch((err) => {
+            console.error("Error saving reset dzikir history:", err);
+          });
         }
         setCount(0);
       });
@@ -371,31 +396,103 @@ export default function TasbihPage() {
     }
   };
 
-  const saveRecord = (completed: boolean) => {
+  const saveRecord = async (completed: boolean) => {
     if (!selectedDhikr) return;
 
-    const newRecord: DhikrRecord = {
-      id: Date.now().toString(),
+    if (!session?.user?.id) {
+      throw new Error("Anda harus login terlebih dahulu");
+    }
+
+    const payload = {
       dhikrName: selectedDhikr.name,
       count: completed ? target : count,
-      target: target,
-      date: new Date().toISOString(),
-      completed: completed,
+      target,
+      completed,
     };
-    setRecords((prev) => [newRecord, ...prev].slice(0, 50)); // Keep last 50 records
+
+    try {
+      const response = await fetch("/api/dzikir/history", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(
+          errorData?.message || errorData?.error || "Gagal menyimpan history",
+        );
+      }
+
+      const created = await response.json();
+
+      const newRecord: DhikrRecord = {
+        id: created.id,
+        dhikrName: created.dhikrName,
+        count: created.count,
+        target: created.target,
+        date: created.date,
+        completed: created.completed,
+      };
+
+      setRecords((prev) => [newRecord, ...prev].slice(0, 50));
+    } catch (error) {
+      console.error("Error saving dzikir history:", error);
+      throw error;
+    }
   };
 
   const deleteRecord = (id: string) => {
-    setRecords((prev) => prev.filter((record) => record.id !== id));
+    fetch(`/api/dzikir/history/${id}`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((data) => {
+            throw new Error(
+              data?.message || data?.error || "Gagal menghapus history",
+            );
+          });
+        }
+
+        setRecords((prev) => prev.filter((record) => record.id !== id));
+      })
+      .catch((err) => {
+        console.error("Error deleting dzikir history:", err);
+        error(
+          "Terjadi Kesalahan",
+          "Gagal menghapus history. Silakan coba lagi",
+        );
+      });
   };
 
   const clearAllRecords = () => {
     confirm("Hapus Semua History?", "Tindakan ini tidak dapat dibatalkan").then(
-      (result) => {
-        if (result.isConfirmed) {
+      async (result) => {
+        if (!result.isConfirmed) return;
+
+        try {
+          const response = await fetch("/api/dzikir/history/clear", {
+            method: "DELETE",
+          });
+
+          if (!response.ok) {
+            const data = await response.json().catch(() => null);
+            throw new Error(
+              data?.message || data?.error || "Gagal menghapus semua history",
+            );
+          }
+
           setRecords([]);
-          localStorage.removeItem("tasbih-records");
           success("Berhasil", "Semua history telah dihapus");
+        } catch (err) {
+          console.error("Error clearing dzikir history:", err);
+          error(
+            "Terjadi Kesalahan",
+            "Gagal menghapus semua history. Silakan coba lagi",
+          );
         }
       },
     );
@@ -443,7 +540,6 @@ export default function TasbihPage() {
       return;
     }
 
-    
     try {
       const response = await fetch(`/api/dzikir/targetcount/delete/${id}`, {
         method: "DELETE",

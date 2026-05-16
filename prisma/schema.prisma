@@ -57,6 +57,7 @@ model User {
   dzikirs     Dzikir[]
   userDzikirs UserDzikir[]
   countTargets CountTarget[]
+  dzikirHistories DzikirHistory[]
 }
 
 model VerificationToken {
@@ -108,4 +109,18 @@ model CountTarget {
   createdAt DateTime @default(now())
   userId    String?
   user      User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model DzikirHistory {
+  id         String   @id @default(uuid())
+  userId     String
+  dhikrName  String
+  count      Int
+  target     Int
+  completed  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }
