@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { Loader2, MapPin, ChevronRight } from "lucide-react";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@/lib/contexts/theme";
 import { KabupatanKota } from "@/types/jadwal-solat";
 
 export default function JadwalSholat() {

@@ -1,4 +1,4 @@
-import { auth } from "@/helper/auth";
+import { auth } from "@/lib/auth";
 
 export async function CheckAuth(): Promise<boolean> {
   const session = await auth();

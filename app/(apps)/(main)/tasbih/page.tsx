@@ -2,15 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@/lib/contexts/theme";
 import { useAlert } from "@/hooks/useAlert";
-import DhikrCard from "@/components/tasbih/DhikrCard";
-import CounterDisplay from "@/components/tasbih/CounterDisplay";
-import HistoryCard from "@/components/tasbih/HistoryCard";
-import SettingsToggle from "@/components/tasbih/SettingsToggle";
-import CustomDhikrModal from "@/components/tasbih/CustomDhikrModal";
-import TargetSelection from "@/components/tasbih/TargetSelection";
-import TipsSelection from "@/components/tasbih/TipsSelection";
+import DhikrCard from "@/features/tasbih/components/DhikrCard";
+import CounterDisplay from "@/features/tasbih/components/CounterDisplay";
+import HistoryCard from "@/features/tasbih/components/HistoryCard";
+import SettingsToggle from "@/features/tasbih/components/SettingsToggle";
+import CustomDhikrModal from "@/features/tasbih/components/CustomDhikrModal";
+import TargetSelection from "@/features/tasbih/components/TargetSelection";
+import TipsSelection from "@/features/tasbih/components/TipsSelection";
 import { useRouter } from "next/navigation";
 
 interface DhikrRecord {

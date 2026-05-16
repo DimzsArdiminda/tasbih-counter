@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@/lib/contexts/theme";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import AlertError from "@/components/ui/error";

@@ -1,6 +1,6 @@
 "use client";
 import Field from "@/components/ui/field";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@/lib/contexts/theme";
 import { useState } from "react";
 import { Mail, Lock, User } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -8,8 +8,8 @@ import AlertError from "@/components/ui/error";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { RegisterDataType, RegisterSchema } from "@/app/schemas/register";
-import { registerUser } from "@/helper/reg";
+import { RegisterDataType, RegisterSchema } from "@/server/validations/register";
+import { registerUser } from "@/server/services/auth";
 
 export default function Register() {
   const { isDark } = useTheme();

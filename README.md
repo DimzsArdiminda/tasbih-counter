@@ -279,13 +279,14 @@ Jika Anda memiliki pertanyaan atau masalah, silakan buat issue di repository ini
 ## 🗓️ Roadmap
 
 - [x] Jadwal Sholat dengan geolokasi
-- [x] Pencarian kota dan provinsi
-- [ ] Tasbih Digital
-- [ ] Al-Quran Digital
+- [x] Tasbih Digital
+- [x] Mode gelap/terang
 - [ ] Notifikasi waktu sholat
+- [ ] Al-Quran Digital
 - [ ] Arah kiblat
 - [ ] Doa-doa harian
-- [ ] Mode gelap/terang
+- [ ] Quiz Alquran
+- [ ] Ensikloppedia Isalm
 
 ## 🙏 Acknowledgments
 

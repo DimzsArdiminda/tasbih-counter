@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { Loader2, ArrowLeft, Calendar, MapPin } from "lucide-react";
 import Link from "next/link";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@/lib/contexts/theme";
 import type { JadwalResponse, JadwalKomponen } from "@/types/jadwal-solat";
 
 interface FormattedSchedule {
