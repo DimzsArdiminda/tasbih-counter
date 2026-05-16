@@ -44,10 +44,11 @@ export default function TasbihPage() {
   const { data: session } = useSession();
   const { success, error, confirm } = useAlert();
   const [count, setCount] = useState(0);
-  const [allDhikrs, setAllDhikrs] = useState<DhikrPreset[]>([]);;
+  const [allDhikrs, setAllDhikrs] = useState<DhikrPreset[]>([]);
   const [dzikirById, setDzikirById] = useState<DhikrPreset[]>([]);
   const [selectedDhikr, setSelectedDhikr] = useState<DhikrPreset | null>(null);
   const [target, setTarget] = useState<number>(33);
+  const [targetById, setTargetById] = useState<CustomTarget | null>(null);
   const [allTarget, setAllTarget] = useState<CustomTarget[]>([]);
   const [customTarget, setCustomTarget] = useState("");
   const [showCustomInput, setShowCustomInput] = useState(false);
@@ -61,6 +62,7 @@ export default function TasbihPage() {
   const [activeTab, setActiveTab] = useState<"all" | "custom">("all");
   const router = useRouter();
 
+  // add some custom dzikir
   const handleAddCustomDhikr = async (
     name: string,
     arabic: string,
@@ -108,6 +110,40 @@ export default function TasbihPage() {
       throw error;
     }
   };
+
+  // get target by user id
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!session?.user?.id) return;
+
+      try {
+        const response = await fetch("/api/dzikir/targetcount/byid");
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch user dzikir");
+        }
+
+        const data = await response.json();
+
+        if (Array.isArray(data) && data.length > 0) {
+          setTargetById({
+            id: data[0].id,
+            target: data[0].target,
+            userId: data[0].userId,
+          });
+        } else {
+          setTargetById(null);
+        }
+      } catch (error) {
+        console.error("Error fetching user dzikir:", error);
+        setTargetById(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [session?.user?.id]);
 
   // add some target
   const handleAddCustomTarget = async (target: number) => {
@@ -171,7 +207,7 @@ export default function TasbihPage() {
           userId: d.userId,
         }));
 
-        // simpan semua target
+        // save all target
         setAllTarget(apiTarget);
 
         // set target default
@@ -230,6 +266,7 @@ export default function TasbihPage() {
     fetchData();
   }, []);
 
+  // get dzikir by user id
   useEffect(() => {
     const fetchData = async () => {
       if (!session?.user?.id) return;
@@ -448,6 +485,7 @@ export default function TasbihPage() {
 
         {/* Target Selection */}
         <TargetSelection
+          targetById={targetById}
           target={target}
           customTarget={customTarget}
           showCustomInput={showCustomInput}
