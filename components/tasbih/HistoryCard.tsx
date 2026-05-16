@@ -1,3 +1,4 @@
+import { useAlert } from "@/hooks/useAlert";
 import React from "react";
 
 interface DhikrRecord {
@@ -28,6 +29,8 @@ export function HistoryCardItem({
   onDelete,
   isDark,
 }: HistoryCardItemProps) {
+  const { confirm } = useAlert();
+
   return (
     <div
       className={`p-4 rounded-lg ${
@@ -58,7 +61,18 @@ export function HistoryCardItem({
           </p>
         </div>
         <button
-          onClick={() => onDelete(record.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+
+            confirm(
+              "Hapus Target",
+              "Apakah Anda yakin ingin menghapus target ini?",
+            ).then((res) => {
+              if (res.isConfirmed) {
+                onDelete(record.id);
+              }
+            });
+          }}
           className="text-red-500 hover:text-red-600 p-2"
         >
           🗑️
