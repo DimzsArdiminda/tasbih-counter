@@ -5,19 +5,31 @@ import { NextResponse } from "next/server";
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await context.params;
+
+    console.log("Attempting to delete target with ID:", id);
+
     await CheckAuth();
+
     const session = await auth();
 
     if (!session || !session.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (!id) {
+      return NextResponse.json(
+        { message: "ID target tidak ditemukan" },
+        { status: 400 },
+      );
+    }
+
     const target = await prisma.countTarget.findUnique({
       where: {
-        id: params.id,
+        id,
       },
     });
 
@@ -30,14 +42,16 @@ export async function DELETE(
 
     if (target.userId !== session.user.id) {
       return NextResponse.json(
-        { message: "Anda tidak memiliki izin untuk menghapus target ini" },
+        {
+          message: "Anda tidak memiliki izin untuk menghapus target ini",
+        },
         { status: 403 },
       );
     }
 
     await prisma.countTarget.delete({
       where: {
-        id: params.id,
+        id,
       },
     });
 
@@ -47,6 +61,7 @@ export async function DELETE(
     );
   } catch (error) {
     console.error("Error deleting count target:", error);
+
     return NextResponse.json(
       {
         message:

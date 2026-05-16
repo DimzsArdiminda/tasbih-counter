@@ -12,8 +12,8 @@ interface TargetSelectionProps {
   customTarget: string;
   showCustomInput: boolean;
   isDark: boolean;
-  targetOptions: number[];
-  targetById: CustomTarget | null;
+  targetOptions: number[]; // global/public options (not user's own)
+  userTargets: CustomTarget[]; // targets created by current user
 
   onTargetChange: (newTarget: number) => void;
   onShowCustomInput: (show: boolean) => void;
@@ -26,7 +26,7 @@ interface TargetSelectionProps {
 
 export default function TargetSelection({
   target,
-  targetById,
+  userTargets,
   customTarget,
   showCustomInput,
   isDark,
@@ -69,7 +69,7 @@ export default function TargetSelection({
               onClick={() => onTargetChange(option)}
               className={`relative px-6 py-3 rounded-2xl font-semibold transition-all duration-300 border ${
                 isSelected
-                  ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-transparent scale-105 shadow-lg shadow-emerald-500/20"
+                  ? "bg-linear-to-r from-emerald-500 to-teal-500 text-white border-transparent scale-105 shadow-lg shadow-emerald-500/20"
                   : isDark
                     ? "bg-gray-700 border-gray-600 hover:bg-gray-600"
                     : "bg-gray-50 border-gray-200 hover:bg-gray-100"
@@ -81,54 +81,6 @@ export default function TargetSelection({
         })}
       </div>
 
-      {/* User Custom Target */}
-      {targetById && (
-        <div className="mt-6">
-          <p
-            className={`text-sm mb-3 ${
-              isDark ? "text-gray-400" : "text-gray-500"
-            }`}
-          >
-            Target custom milik Anda
-          </p>
-
-          <div
-            className={`relative flex items-center justify-between px-5 py-4 rounded-2xl border transition-all ${
-              target === targetById.target
-                ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white border-transparent shadow-lg"
-                : isDark
-                  ? "bg-gray-700 border-gray-600"
-                  : "bg-purple-50 border-purple-200"
-            }`}
-          >
-            <button
-              onClick={() => onTargetChange(targetById.target)}
-              className="flex items-center gap-3 w-full text-left"
-            >
-              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center font-bold">
-                ✨
-              </div>
-
-              <div>
-                <p className="font-semibold">Target Custom</p>
-
-                <p className="text-sm opacity-80">{targetById.target} dzikir</p>
-              </div>
-            </button>
-
-            {/* Delete Button */}
-            {targetById.id && onDeleteCustomTarget && (
-              <button
-                onClick={() => onDeleteCustomTarget(targetById.id!)}
-                className="ml-4 w-9 h-9 rounded-xl bg-red-500/20 hover:bg-red-500 text-red-500 hover:text-white flex items-center justify-center transition-all"
-              >
-                <X size={18} />
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* Divider */}
       <div
         className={`my-7 border-t ${
@@ -136,13 +88,55 @@ export default function TargetSelection({
         }`}
       />
 
+      {/* User Custom Target */}
+      <h4 className="mt-8 mb-4 text-lg font-semibold">Target Custom Anda</h4>
+      <div className="flex flex-wrap gap-3">
+        {userTargets.length === 0 && (
+          <div
+            className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}
+          >
+            Belum ada target custom.
+          </div>
+        )}
+
+        {userTargets.map((t) => {
+          const isSelected = target === t.target;
+          return (
+            <div key={t.id} className="relative">
+              <button
+                onClick={() => onTargetChange(t.target)}
+                className={`px-6 py-3 rounded-2xl font-semibold transition-all duration-300 border ${
+                  isSelected
+                    ? "bg-linear-to-r from-emerald-500 to-teal-500 text-white border-transparent scale-105 shadow-lg shadow-emerald-500/20"
+                    : isDark
+                      ? "bg-gray-700 border-gray-600 hover:bg-gray-600"
+                      : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                }`}
+              >
+                {t.target}
+              </button>
+
+              {onDeleteCustomTarget && t.id && (
+                <button
+                  onClick={() => onDeleteCustomTarget(t.id!)}
+                  className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-red-500 text-white flex items-center justify-center text-xs"
+                  aria-label="Hapus target"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
       {/* Add Custom */}
-      <div className="space-y-4">
+      <div className="space-y-4 mt-4">
         <button
           onClick={() => onShowCustomInput(!showCustomInput)}
           className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-semibold transition-all ${
             showCustomInput
-              ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg"
+              ? "bg-linear-to-r from-purple-500 to-pink-500 text-white shadow-lg"
               : isDark
                 ? "bg-gray-700 hover:bg-gray-600"
                 : "bg-gray-100 hover:bg-gray-200"
@@ -173,7 +167,7 @@ export default function TargetSelection({
 
             <button
               onClick={onSetCustomTarget}
-              className="px-6 py-3 rounded-2xl font-semibold bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg"
+              className="px-6 py-3 rounded-2xl font-semibold bg-linear-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg"
             >
               Simpan
             </button>

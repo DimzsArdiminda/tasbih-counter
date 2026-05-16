@@ -146,43 +146,43 @@ export default function TasbihPage() {
   }, [session?.user?.id]);
 
   // add some target
-    const handleAddCustomTarget = async (target: number) => {
-      if (!session?.user?.id) {
-        throw new Error("Anda harus login terlebih dahulu");
+  const handleAddCustomTarget = async (target: number) => {
+    if (!session?.user?.id) {
+      throw new Error("Anda harus login terlebih dahulu");
+    }
+
+    try {
+      const response = await fetch("/api/dzikir/targetcount/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          target,
+          userId: session.user.id,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Gagal menambahkan target");
       }
 
-      try {
-        const response = await fetch("/api/dzikir/targetcount/add", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            target,
-            userId: session.user.id,
-          }),
-        });
+      const newTarget = await response.json();
+      const newCustomTarget: CustomTarget = {
+        id: newTarget.id,
+        target: newTarget.target,
+        userId: session?.user?.id,
+      };
 
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || "Gagal menambahkan target");
-        }
-
-        const newTarget = await response.json();
-        const newCustomTarget: CustomTarget = {
-          id: newTarget.id,
-          target: newTarget.target,
-          userId: session?.user?.id,
-        };
-
-        setAllTarget((prev) => [...prev, newCustomTarget]);
-        setTarget(newCustomTarget.target);
-        router.refresh();
-      } catch (error) {
-        console.error("Error adding custom dzikir:", error);
-        throw error;
-      }
-    };
+      setAllTarget((prev) => [...prev, newCustomTarget]);
+      setTarget(newCustomTarget.target);
+      router.refresh();
+    } catch (error) {
+      console.error("Error adding custom dzikir:", error);
+      throw error;
+    }
+  };
 
   // get all target
   useEffect(() => {
@@ -437,6 +437,43 @@ export default function TasbihPage() {
     }
   };
 
+  const handleDeleteCustomTarget = async (id: string | undefined) => {
+    if (!id) {
+      console.warn("Delete called without target id");
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/dzikir/targetcount/delete/${id}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(
+          data?.message || data?.error || "Gagal menghapus target",
+        );
+      }
+
+      // remove from all targets
+      setAllTarget((prev) => prev.filter((t: CustomTarget) => t.id !== id));
+      if (targetById?.id === id) {
+        setTargetById(null);
+      }
+      // ...existing code...
+
+      success("Berhasil", "Target custom berhasil dihapus");
+    } catch (err) {
+      console.error("Error deleting custom target:", err);
+
+      error(
+        "Terjadi Kesalahan",
+        err instanceof Error ? err.message : "Gagal menghapus target custom",
+      );
+    }
+  };
+
   return (
     <div
       className={`min-h-screen py-8 ${isDark ? "text-white" : "text-gray-900"}`}
@@ -486,16 +523,19 @@ export default function TasbihPage() {
 
         {/* Target Selection */}
         <TargetSelection
-          targetById={targetById}
           target={target}
           customTarget={customTarget}
           showCustomInput={showCustomInput}
           isDark={isDark}
-          targetOptions={allTarget.map((t) => t.target)}
+          targetOptions={allTarget
+            .filter((t) => t.userId !== session?.user?.id)
+            .map((t) => t.target)}
+          userTargets={allTarget.filter((t) => t.userId === session?.user?.id)}
           onTargetChange={handleTargetChange}
           onShowCustomInput={setShowCustomInput}
           onCustomTargetChange={setCustomTarget}
           onSetCustomTarget={() => handleAddCustomTarget(Number(customTarget))}
+          onDeleteCustomTarget={handleDeleteCustomTarget}
         />
 
         {/* History Section */}
