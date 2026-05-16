@@ -146,42 +146,43 @@ export default function TasbihPage() {
   }, [session?.user?.id]);
 
   // add some target
-  const handleAddCustomTarget = async (target: number) => {
-    if (!session?.user?.id) {
-      throw new Error("Anda harus login terlebih dahulu");
-    }
-
-    try {
-      const response = await fetch("/api/dzikir/targetcount/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          target,
-          userId: session.user.id,
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Gagal menambahkan target");
+    const handleAddCustomTarget = async (target: number) => {
+      if (!session?.user?.id) {
+        throw new Error("Anda harus login terlebih dahulu");
       }
 
-      const newTarget = await response.json();
-      const newCustomTarget: CustomTarget = {
-        id: newTarget.id,
-        target: newTarget.target,
-        userId: session?.user?.id,
-      };
+      try {
+        const response = await fetch("/api/dzikir/targetcount/add", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            target,
+            userId: session.user.id,
+          }),
+        });
 
-      setTarget(newTarget.target);
-      router.refresh();
-    } catch (error) {
-      console.error("Error adding custom dzikir:", error);
-      throw error;
-    }
-  };
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || "Gagal menambahkan target");
+        }
+
+        const newTarget = await response.json();
+        const newCustomTarget: CustomTarget = {
+          id: newTarget.id,
+          target: newTarget.target,
+          userId: session?.user?.id,
+        };
+
+        setAllTarget((prev) => [...prev, newCustomTarget]);
+        setTarget(newCustomTarget.target);
+        router.refresh();
+      } catch (error) {
+        console.error("Error adding custom dzikir:", error);
+        throw error;
+      }
+    };
 
   // get all target
   useEffect(() => {

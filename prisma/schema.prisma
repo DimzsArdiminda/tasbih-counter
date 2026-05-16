@@ -56,7 +56,7 @@ model User {
   sessions    Session[]
   dzikirs     Dzikir[]
   userDzikirs UserDzikir[]
-  countTarget CountTarget?
+  countTargets CountTarget[]
 }
 
 model VerificationToken {
@@ -102,12 +102,10 @@ model UserDzikir {
 }
 
 
-model CountTarget{
+model CountTarget {
   id        String   @id @default(uuid())
   target    Int      @default(0)
   createdAt DateTime @default(now())
-  userId        String?
-
-  user         User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  @@unique([userId])
+  userId    String?
+  user      User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
