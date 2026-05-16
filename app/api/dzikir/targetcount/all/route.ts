@@ -11,7 +11,7 @@ export async function GET(){
                 userId : null,
             },
             orderBy: {
-                id: "asc",
+                target: "asc",
             },
         })
         return NextResponse.json(res, { status: 200 });

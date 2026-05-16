@@ -6,9 +6,11 @@ interface TargetSelectionProps {
   showCustomInput: boolean;
   isDark: boolean;
   targetOptions: number[];
+
   onTargetChange: (newTarget: number) => void;
   onShowCustomInput: (show: boolean) => void;
   onCustomTargetChange: (value: string) => void;
+
   onSetCustomTarget: () => void;
 }
 

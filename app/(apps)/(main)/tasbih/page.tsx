@@ -13,7 +13,6 @@ import TargetSelection from "@/components/tasbih/TargetSelection";
 import TipsSelection from "@/components/tasbih/TipsSelection";
 import { useRouter } from "next/navigation";
 
-
 interface DhikrRecord {
   id: string;
   dhikrName: string;
@@ -32,17 +31,24 @@ interface DhikrPreset {
   userId?: string;
 }
 
-const targetOptions = [33, 99, 100, 1000];
+interface CustomTarget {
+  id?: string;
+  target: number;
+  userId?: string;
+}
+
+// const targetOptions = [33, 99, 100, 2000];
 
 export default function TasbihPage() {
   const { isDark } = useTheme();
   const { data: session } = useSession();
   const { success, error, confirm } = useAlert();
   const [count, setCount] = useState(0);
-  const [allDhikrs, setAllDhikrs] = useState<DhikrPreset[]>([]);
+  const [allDhikrs, setAllDhikrs] = useState<DhikrPreset[]>([]);;
   const [dzikirById, setDzikirById] = useState<DhikrPreset[]>([]);
   const [selectedDhikr, setSelectedDhikr] = useState<DhikrPreset | null>(null);
-  const [target, setTarget] = useState(33);
+  const [target, setTarget] = useState<number>(33);
+  const [allTarget, setAllTarget] = useState<CustomTarget[]>([]);
   const [customTarget, setCustomTarget] = useState("");
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [records, setRecords] = useState<DhikrRecord[]>([]);
@@ -53,7 +59,7 @@ export default function TasbihPage() {
   const [showCustomDhikrModal, setShowCustomDhikrModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"all" | "custom">("all");
-  const router = useRouter()
+  const router = useRouter();
 
   const handleAddCustomDhikr = async (
     name: string,
@@ -96,13 +102,94 @@ export default function TasbihPage() {
       };
 
       setAllDhikrs((prev) => [...prev, newDhikr]);
-      router.refresh()
+      router.refresh();
     } catch (error) {
       console.error("Error adding custom dzikir:", error);
       throw error;
     }
   };
 
+  // add some target
+  const handleAddCustomTarget = async (target: number) => {
+    if (!session?.user?.id) {
+      throw new Error("Anda harus login terlebih dahulu");
+    }
+
+    try {
+      const response = await fetch("/api/dzikir/targetcount/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          target,
+          userId: session.user.id,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Gagal menambahkan target");
+      }
+
+      const newTarget = await response.json();
+      const newCustomTarget: CustomTarget = {
+        id: newTarget.id,
+        target: newTarget.target,
+        userId: session?.user?.id,
+      };
+
+      setTarget(newTarget.target);
+      router.refresh();
+    } catch (error) {
+      console.error("Error adding custom dzikir:", error);
+      throw error;
+    }
+  };
+
+  // get all target
+  useEffect(() => {
+    const fetchAllTarget = async () => {
+      try {
+        const response = await fetch("/api/dzikir/targetcount/all");
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch target");
+        }
+
+        const data = await response.json();
+
+        if (!Array.isArray(data)) {
+          console.error("Data is not an array:", data);
+          setTarget(33);
+          return;
+        }
+
+        const apiTarget: CustomTarget[] = data.map((d: CustomTarget) => ({
+          id: d.id,
+          target: d.target,
+          userId: d.userId,
+        }));
+
+        // simpan semua target
+        setAllTarget(apiTarget);
+
+        // set target default
+        if (apiTarget.length > 0) {
+          setTarget(apiTarget[0].target);
+        }
+      } catch (error) {
+        console.error("Error fetching target:", error);
+        setTarget(33);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAllTarget();
+  }, []);
+
+  // get all dzikir
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -290,14 +377,6 @@ export default function TasbihPage() {
     }
   };
 
-  const handleCustomTarget = () => {
-    const value = parseInt(customTarget);
-    if (value && value > 0 && value <= 10000) {
-      handleTargetChange(value);
-      setCustomTarget("");
-    }
-  };
-
   const deleteDzikir = async (id: string | undefined) => {
     if (!id) return;
 
@@ -373,11 +452,11 @@ export default function TasbihPage() {
           customTarget={customTarget}
           showCustomInput={showCustomInput}
           isDark={isDark}
-          targetOptions={targetOptions}
+          targetOptions={allTarget.map((t) => t.target)}
           onTargetChange={handleTargetChange}
           onShowCustomInput={setShowCustomInput}
           onCustomTargetChange={setCustomTarget}
-          onSetCustomTarget={handleCustomTarget}
+          onSetCustomTarget={() => handleAddCustomTarget(Number(customTarget))}
         />
 
         {/* History Section */}
