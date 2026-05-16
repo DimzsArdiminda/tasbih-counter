@@ -443,6 +443,7 @@ export default function TasbihPage() {
       return;
     }
 
+    
     try {
       const response = await fetch(`/api/dzikir/targetcount/delete/${id}`, {
         method: "DELETE",
@@ -461,7 +462,6 @@ export default function TasbihPage() {
       if (targetById?.id === id) {
         setTargetById(null);
       }
-      // ...existing code...
 
       success("Berhasil", "Target custom berhasil dihapus");
     } catch (err) {

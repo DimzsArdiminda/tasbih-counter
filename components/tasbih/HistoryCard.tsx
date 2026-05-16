@@ -77,7 +77,7 @@ export default function HistoryCard({
 }: HistoryCardProps) {
   return (
     <div
-      className={`rounded-2xl shadow-xl p-6 ${
+      className={`mt-6 rounded-2xl shadow-xl p-6 ${
         isDark ? "bg-gray-800" : "bg-white"
       }`}
     >
