@@ -55,6 +55,7 @@ export default function Hero({ isDark }: HeroProps) {
       async () => {
         try {
           const nearestCityName = await findNearestCityName();
+          console.log("Nearest city name:", nearestCityName);
           if (!nearestCityName) {
             throw new Error("Tidak dapat menemukan kota terdekat");
           }

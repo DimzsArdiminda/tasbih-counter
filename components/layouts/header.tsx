@@ -1,10 +1,13 @@
+
 "use client";
 
-import { Moon, Sun, Menu, X } from "lucide-react";
+import { Moon, Sun, Menu, X, ChevronDown } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import NavbarGuest from "./navbar-guest";
+import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 
 interface HeaderProps {
   isDark: boolean;
@@ -21,7 +24,27 @@ export default function Header({
 }: HeaderProps) {
   const Router = useRouter();
   const { status } = useSession();
+  const { data: session } = useSession();
+  const [openDropdown, setOpenDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setOpenDropdown(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+  
   const handleLogout = async () => {
     await signOut({
       callbackUrl: "/auth/login",
@@ -86,12 +109,104 @@ export default function Header({
                 <Moon size={20} className="text-gray-700" />
               )}
             </button>
-            <button
-              className={`hidden sm:block px-4 py-2 rounded-lg ${status === "authenticated" ? (isDark ? "bg-red-600 hover:bg-red-700" : "bg-red-500 hover:bg-red-600") : isDark ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"} text-white font-medium transition-colors`}
-              onClick={handleLogout}
-            >
-              {status === "authenticated" ? "Logout" : "Login"}
-            </button>
+            <div className="relative" ref={dropdownRef}>
+              {status === "authenticated" ? (
+                <>
+                  <button
+                    onClick={() => setOpenDropdown(!openDropdown)}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2 transition ${
+                      isDark
+                        ? "hover:bg-gray-700 text-white"
+                        : "hover:bg-gray-100 text-gray-900"
+                    }`}
+                  >
+                    {/* <p>{session?.user?.photo}</p> */}
+                    <Image
+                      width={40}
+                      height={40}
+                      src={
+                        session?.user?.photo
+                          ? session?.user?.photo
+                          : `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                              session?.user?.name || "Guest",
+                            )}&background=2563eb&color=fff`
+                      }
+                      alt="Profile"
+                      className="w-10 h-10 rounded-full object-cover border"
+                    />
+
+                    <span className="font-medium hidden sm:block">
+                      {session?.user?.name}
+                    </span>
+
+                    <ChevronDown
+                      size={18}
+                      className={`transition-transform ${
+                        openDropdown ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {openDropdown && (
+                    <div
+                      className={`absolute right-0 mt-2 w-52 rounded-xl shadow-lg border overflow-hidden z-50 ${
+                        isDark
+                          ? "bg-gray-800 border-gray-700"
+                          : "bg-white border-gray-200"
+                      }`}
+                    >
+                      <div
+                        className={`px-4 py-3 border-b ${
+                          isDark ? "border-gray-700" : "border-gray-200"
+                        }`}
+                      >
+                        <p
+                          className={`font-semibold ${
+                            isDark ? "text-white" : "text-gray-900"
+                          }`}
+                        >
+                          {session?.user?.name}
+                        </p>
+
+                        <p className="text-sm text-gray-500 truncate">
+                          {session?.user?.email}
+                        </p>
+                      </div>
+
+                      <Link
+                        href={`/dashboard/profile/${session?.user?.id}`}
+                        onClick={() => setOpenDropdown(false)}
+                        className={`block px-4 py-3 transition ${
+                          isDark
+                            ? "hover:bg-gray-700 text-gray-200"
+                            : "hover:bg-gray-100 text-gray-700"
+                        }`}
+                      >
+                        Profile
+                      </Link>
+
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <button
+                  className={`px-4 py-2 rounded-lg ${
+                    isDark
+                      ? "bg-blue-600 hover:bg-blue-700"
+                      : "bg-blue-500 hover:bg-blue-600"
+                  } text-white transition`}
+                  onClick={() => Router.push("/auth/login")}
+                >
+                  Login
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

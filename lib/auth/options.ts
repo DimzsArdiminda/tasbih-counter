@@ -2,8 +2,6 @@ import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import type { JWT } from "next-auth/jwt";
-import type { Session } from "next-auth";
 import type { User } from "next-auth";
 import type { Account } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
@@ -129,7 +127,7 @@ export const authOptions: NextAuthOptions = {
             data: {
               email: user.email,
               name: user.name,
-              photo: user.image,
+              photo: user.image || null,
               emailVerified: new Date(),
               accounts: {
                 create: {
@@ -152,24 +150,35 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
 
-    async jwt({ token, user }: { token: JWT; user?: User }) {
+    async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.name = user.name;
+        const dbUser = await prisma.user.findUnique({
+          where: {
+            email: user.email!,
+          },
+        });
+
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.name = dbUser.name;
+          token.email = dbUser.email;
+          token.photo = dbUser.photo;
+        }
       }
+
       return token;
     },
 
-    async session({ session, token }: { session: Session; token: JWT }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-        session.user.email = token.email as string;
-        session.user.name = token.name as string;
-      }
-      return session;
+    async session({ session, token }) {
+        if (session.user) {
+          session.user.id = token.id as string;
+          session.user.email = token.email as string;
+          session.user.name = token.name as string;
+          session.user.photo = token.photo as string | null;
+        }
+        return session;
+      },
     },
-  },
 
   pages: {
     signIn: "/auth/login",
