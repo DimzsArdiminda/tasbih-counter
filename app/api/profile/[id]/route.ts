@@ -1,5 +1,6 @@
 import { auth, CheckAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { redis } from "@/lib/redis/redis";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -17,27 +18,47 @@ export async function GET(
 
     const { id } = await params;
 
+    const cacheKey = `profile:${id}`;
+
+    const cached = await redis.get(cacheKey);
+
+    if (cached) {
+      // console.log(" Cache Hit");
+      return NextResponse.json(cached);
+    }
+
+    // console.log(" Cache Miss");
+
     const profile = await prisma.user.findUnique({
-        where: {
-            id,
-        },
-        select: {
-            id: true,
-            name: true,
-            email: true,
-            photo: true,
-        },
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        photo: true,
+      },
     });
 
     if (!profile) {
-      return NextResponse.json({ message: "Profile not found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "Profile not found" },
+        { status: 404 },
+      );
     }
 
-    return NextResponse.json(profile, { status:200 });
+    await redis.set(cacheKey, profile, {
+      ex: 600, // 10 menit
+    });
 
+    return NextResponse.json(profile);
   } catch (error) {
-    console.error("Error fetching profile:", error);
+    console.error(error);
 
-    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
