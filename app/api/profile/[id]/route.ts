@@ -38,6 +38,7 @@ export async function GET(
         name: true,
         email: true,
         photo: true,
+        createdAt: true,
       },
     });
 
