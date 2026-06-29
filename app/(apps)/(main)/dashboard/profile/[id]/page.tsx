@@ -89,7 +89,7 @@ export default function ProfileCard() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
           {/* Info card */}
           <CardInfo profile={profile} joinedDate={joinedDate} isDark={isDark} />
           {/* Password card */}

@@ -28,7 +28,7 @@ export default function CardInfo({ isDark, profile, joinedDate }: CardInfoProps)
 return (
     <FlipContainer
         isFlipped={isEditing}
-        className="h-[750px]"
+        className="h-[780px]"
         front={
             <CardFront
                 profile={profile}
