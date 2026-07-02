@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Loading from "@/components/ui/loading";
 import AlertError from "@/components/ui/error";
 import { useTheme } from "@/lib/contexts/theme";
@@ -18,6 +18,14 @@ interface Profile {
   createdAt: string;
 }
 
+interface UpdateProfilePayload {
+  id: string;
+  name: string;
+  email: string;
+  photo: File | null;
+  createdAt: string;
+}
+
 export default function ProfileCard() {
   const params = useParams<{ id: string | string[] }>();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -25,6 +33,7 @@ export default function ProfileCard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { isDark } = useTheme();
+  const router = useRouter();
   
 
   useEffect(() => {
@@ -71,6 +80,31 @@ export default function ProfileCard() {
     year: "numeric",
   });
 
+  const updateProfileUrl = async (updatedProfile: UpdateProfilePayload) => {
+    try {
+      const response = await fetch(`/api/profile/update/`, {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(updatedProfile),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Gagal Merubah Profil");
+      }
+
+      const newProf: Profile = await response.json();
+      setProfile(newProf);
+
+      router.refresh();
+    } catch (error) {
+      console.error("Error adding custom dzikir:", error);
+      throw error;
+    }
+  };
+
   return (
     <div className={`min-h-screen`}>
       <div className="mx-auto max-w-7xl ">
@@ -91,11 +125,16 @@ export default function ProfileCard() {
 
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
           {/* Info card */}
-          <CardInfo profile={profile} joinedDate={joinedDate} isDark={isDark} />
+          <CardInfo
+            onSave={updateProfileUrl}
+            profile={profile}
+            joinedDate={joinedDate}
+            isDark={isDark}
+          />
           {/* Password card */}
           <CardPassword profile={profile} isDark={isDark} />
         </div>
-        </div>
       </div>
+    </div>
   );
 }

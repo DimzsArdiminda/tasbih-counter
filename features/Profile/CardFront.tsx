@@ -35,8 +35,8 @@ export default function CardFront({
       <div
         className={`h-36 ${
           isDark
-            ? "bg-gradient-to-r from-zinc-800 to-zinc-700"
-            : "bg-gradient-to-r from-indigo-500 via-blue-500 to-cyan-500"
+            ? "bg-linear-to-r from-zinc-800 to-zinc-700"
+            : "bg-linear-to-r from-indigo-500 via-blue-500 to-cyan-500"
         }`}
       />
 
