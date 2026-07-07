@@ -19,29 +19,7 @@ export default function Hero({ isDark }: HeroProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
 
-  useEffect(() => {
-    getCurrentLocationAndPrayerSchedule();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const findNearestCityName = async (): Promise<string | null> => {
-    try {
-      const response = await fetch("/api/cities");
-      if (!response.ok) return null;
-
-      const data = await response.json();
-      const cities: KabupatanKota[] = data.data || [];
-
-      if (cities.length === 0) return null;
-
-      return cities[0].lokasi;
-    } catch (err) {
-      console.error("Error finding nearest city:", err);
-      return null;
-    }
-  };
-
-  const getCurrentLocationAndPrayerSchedule = () => {
+  const getPlaceUser = async (): Promise<[string, string] | undefined> => {
     setLoading(true);
     setError("");
 
@@ -51,61 +29,85 @@ export default function Hero({ isDark }: HeroProps) {
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(
-      async () => {
-        try {
-          const nearestCityName = await findNearestCityName();
-          console.log("Nearest city name:", nearestCityName);
-          if (!nearestCityName) {
-            throw new Error("Tidak dapat menemukan kota terdekat");
-          }
-
-          const searchResponse = await fetch(
-            `/api/cities/search?q=${encodeURIComponent(nearestCityName)}`,
-          );
-
-          if (!searchResponse.ok) {
-            throw new Error("Gagal mencari kota");
-          }
-
-          const searchData = await searchResponse.json();
-          const searchCities: KabupatanKota[] = searchData.data || [];
-
-          if (searchCities.length === 0) {
-            throw new Error("Kota tidak ditemukan dalam database");
-          }
-
-          const cityId = searchCities[0].id;
-
-          const prayerResponse = await fetch(`/api/prayer?id=${cityId}`);
-
-          if (!prayerResponse.ok) {
-            throw new Error("Gagal mengambil data jadwal sholat");
-          }
-
-          const prayerDataResponse: JadwalResponse =
-            await prayerResponse.json();
-          setPrayerData(prayerDataResponse);
-        } catch (err) {
-          setError(
-            err instanceof Error
-              ? err.message
-              : "Gagal mengambil data jadwal sholat",
-          );
-          console.error(err);
-        } finally {
-          setLoading(false);
-        }
-      },
-      (error) => {
-        setError(
-          "Gagal mendapatkan lokasi. Pastikan Anda mengizinkan akses lokasi browser.",
-        );
-        setLoading(false);
-        console.error(error);
-      },
+    const position = await new Promise<GeolocationPosition>((resolve, reject) =>
+      navigator.geolocation.getCurrentPosition(resolve, reject),
     );
+
+    const { latitude, longitude } = position.coords;
+
+    const response = await fetch(
+      `/api/province?lat=${latitude}&lon=${longitude}`,
+    );
+
+    const data = await response.json();
+    const cityNorm = data.city.replace(/^(Kota|Kabupaten)\s+/i, "").toLowerCase();
+    return [cityNorm, data.city];
   };
+
+  const getCurrentLocationAndPrayerSchedule = async () => {
+    setLoading(true);
+    setError("");
+
+    if (!navigator.geolocation) {
+      setError("Geolocation tidak didukung oleh browser Anda");
+      setLoading(false);
+      return;
+    }
+    try {
+      const location = await getPlaceUser();
+      if (!location) {
+        throw new Error("Tidak dapat menemukan kota terdekat");
+      }
+      
+      const searchResponse = await fetch(
+        `/api/cities/search?q=${location[0]}`,
+      );
+
+      if (!searchResponse.ok) {
+        throw new Error("Gagal mencari kota");
+      }
+
+      const searchData = await searchResponse.json();
+      const searchCities: KabupatanKota[] = searchData.data || [];
+
+      const targetCity = location[1].toUpperCase().replace(/^Kabupaten/i, "KAB.")
+        .replace(/^Kota/i, "KOTA");
+
+      const selectedCity =
+        searchCities.find((city) => city.lokasi.toUpperCase() === targetCity) ??
+        searchCities.find((city) =>
+          city.lokasi.toUpperCase().includes(targetCity),
+        );
+
+      if (!selectedCity) {
+        throw new Error("Kota tidak ditemukan dalam database");
+      }
+
+      const cityId = selectedCity.id;
+
+      const prayerResponse = await fetch(`/api/prayer?id=${cityId}`);
+
+      if (!prayerResponse.ok) {
+        throw new Error("Gagal mengambil data jadwal sholat");
+      }
+
+      const prayerDataResponse: JadwalResponse = await prayerResponse.json();
+      setPrayerData(prayerDataResponse);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Gagal mengambil data jadwal sholat",
+      );
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    getCurrentLocationAndPrayerSchedule();
+  }, []);
 
   const getTodayPrayer = (): JadwalKomponen | null => {
     if (!prayerData?.data?.jadwal) return null;
