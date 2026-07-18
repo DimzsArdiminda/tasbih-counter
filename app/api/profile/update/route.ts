@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CheckAuth, auth } from "@/lib/auth";
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
@@ -15,7 +16,6 @@ export async function PUT(request: NextRequest) {
         let id: string | undefined;
         let name: string | undefined;
         let email: string | undefined;
-        let phone: string | undefined;
         let address: string | undefined;
         let photoUrl: string | undefined;
 
@@ -26,10 +26,9 @@ export async function PUT(request: NextRequest) {
             id = String(form.get("id") || "");
             name = String(form.get("name") || "");
             email = String(form.get("email") || "");
-            phone = String(form.get("phone") || "");
-            address = String(form.get("address") || "");
 
-            const file = form.get("photo") as File | null;
+            const file = form.get("photo") as File | null
+
             if (file && typeof (file as any).arrayBuffer === "function") {
                 const uploadsDir = path.join(process.cwd(), "public", "uploads");
                 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
@@ -47,20 +46,17 @@ export async function PUT(request: NextRequest) {
             id = body.id;
             name = body.name;
             email = body.email;
-            phone = body.phone;
-            address = body.address;
         }
 
         if (!id) {
             return NextResponse.json({ error: "Missing id" }, { status: 400 });
         }
 
-        // Only allow users to update their own profile (or admins if implemented)
         if (session?.user?.id !== id) {
             return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
 
-        const dataToUpdate: any = { name, email, phone, address };
+        const dataToUpdate: any = { name, email };
         if (photoUrl) dataToUpdate.photo = photoUrl;
 
         const resp = await prisma.user.update({
