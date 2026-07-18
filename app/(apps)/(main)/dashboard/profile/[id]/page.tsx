@@ -82,13 +82,32 @@ export default function ProfileCard() {
 
   const updateProfileUrl = async (updatedProfile: UpdateProfilePayload) => {
     try {
-      const response = await fetch(`/api/profile/update/`, {
-        method: "PUT",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(updatedProfile),
-      });
+      let response: Response;
+
+      if (updatedProfile.photo) {
+        const form = new FormData();
+        form.append("id", updatedProfile.id);
+        form.append("name", updatedProfile.name);
+        form.append("email", updatedProfile.email);
+        form.append("photo", updatedProfile.photo);
+
+        response = await fetch(`/api/profile/update/`, {
+          method: "PUT",
+          body: form,
+        });
+      } else {
+        const payload = {
+          id: updatedProfile.id,
+          name: updatedProfile.name,
+          email: updatedProfile.email,
+        };
+
+        response = await fetch(`/api/profile/update/`, {
+          method: "PUT",
+          headers: { "Content-type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      }
       
       if (!response.ok) {
         const error = await response.json();

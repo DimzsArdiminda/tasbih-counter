@@ -1,33 +1,32 @@
-# DepENDENCIES
-FROM node:22-alpine AS deps
-
+FROM node:22-alpine AS base
 WORKDIR /app
-RUN npm install -g pnpm
+
+# Enable pnpm
+RUN corepack enable
+
+# Install dependencies (cached layer)
 COPY package.json pnpm-lock.yaml ./
-COPY prisma ./prisma
 RUN pnpm install --frozen-lockfile
 
-# BUILDER
-FROM node:22-alpine AS builder
-WORKDIR /app
-RUN npm install -g pnpm
-COPY --from=deps /app/node_modules ./node_modules
+# Copy prisma schema (if used during build)
+COPY prisma ./prisma
+
+# Copy app source and build
 COPY . .
+RUN pnpm build
 
-# PRODUCTION
 FROM node:22-alpine AS runner
-
 WORKDIR /app
-
 ENV NODE_ENV=production
 
-RUN npm install -g pnpm
+# Enable pnpm in runtime image
+RUN corepack enable
 
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+# Copy built output and runtime deps from builder
+COPY --from=base /app/.next ./.next
+COPY --from=base /app/node_modules ./node_modules
+COPY --from=base /app/package.json ./package.json
+COPY --from=base /app/prisma ./prisma
 
 EXPOSE 3000
-
 CMD ["pnpm", "start"]

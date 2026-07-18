@@ -6,3 +6,5 @@ Dockerfile
 README.md
 .env
 .env.prod
+Dockerfile-backup
+docker-compose.yml
