@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Book, Clock, Sparkles } from "lucide-react";
+import { Home, Book, Clock, Sparkles, MessagesSquare } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
@@ -34,6 +34,12 @@ const linkSidebar = [
     title: "Tasbih",
     link: "/tasbih",
     icon: Sparkles,
+    section: "MVP Fiture",
+  },
+  {
+    title: "Hadits",
+    link: "/hadits",
+    icon: MessagesSquare,
     section: "MVP Fiture",
   },
 ];
