@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 
-import { useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@/lib/contexts/theme";
 import {
   Moon,
   Sun,
@@ -22,7 +22,7 @@ import {
   Zap,
   Globe,
 } from "lucide-react";
-import NavbarGuest from "@/components/NavbarGuest";
+import NavbarGuest from "@/components/layouts/navbar-guest";
 
 export default function LandingPage() {
   const { isDark, toggleTheme } = useTheme();

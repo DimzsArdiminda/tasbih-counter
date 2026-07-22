@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Header from "@/components/Header";
-import Sidebar from "@/components/Sidebar";
-import { useTheme } from "@/contexts/ThemeContext";
+import Header from "@/components/layouts/header";
+import Sidebar from "@/components/layouts/sidebar";
+import { useTheme } from "@/lib/contexts/theme";
 
 export default function MainLayout({
   children,

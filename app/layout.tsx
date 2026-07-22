@@ -1,5 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import { ThemeProvider } from "@/contexts/ThemeContext";
+import { ThemeProvider } from "@/lib/contexts/theme";
 import { defaultMetadata } from "./metadata";
 import Providers from "./session";
 import "./globals.css";

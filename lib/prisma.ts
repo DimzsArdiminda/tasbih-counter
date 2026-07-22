@@ -8,13 +8,14 @@ declare global {
 }
 
 const DATABASE_URL = process.env.DATABASE_URL;
-const isProduction = process.env.NODE_ENV === "production";
 
 if (!DATABASE_URL) {
   throw new Error("DATABASE_URL is not defined");
 }
 
 const url = new URL(DATABASE_URL);
+const sslMode = url.searchParams.get("sslmode");
+const useSsl = sslMode === "require" || sslMode === "no-verify";
 
 const poolConfig = {
   host: url.hostname,
@@ -25,7 +26,7 @@ const poolConfig = {
   max: 10, // Maximum pool size
   connectionTimeoutMillis: 30000,
   idleTimeoutMillis: 30000,
-  ssl: isProduction ? { rejectUnauthorized: false } : false,
+  ssl: useSsl ? { rejectUnauthorized: false } : false,
 };
 
 const pool = global.pgPool ?? new Pool(poolConfig);

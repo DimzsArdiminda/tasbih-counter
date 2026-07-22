@@ -1,4 +1,4 @@
-import { CheckAuth } from "@/helper/session";
+import { CheckAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 

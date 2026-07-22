@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const response = await fetch(
-      `${MYQURAN_API_BASE}/kabkota/cari/${encodeURIComponent(query.trim())}`,
+      `${MYQURAN_API_BASE}/kabkota/cari/${encodeURIComponent(query)}`,
       {
         headers: {
           "Content-Type": "application/json",

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { CheckAuth } from "@/helper/session";
+import { CheckAuth } from "@/lib/auth";
 import session from "@/app/session";
 
 interface AddDzikirRequest {

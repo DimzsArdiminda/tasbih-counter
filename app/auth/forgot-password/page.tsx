@@ -1,7 +1,7 @@
 "use client";
 
 import { Mail } from "lucide-react";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@/lib/contexts/theme";
 import Field from "@/components/ui/field";
 import { useState } from "react";
 import AlertError from "@/components/ui/error";

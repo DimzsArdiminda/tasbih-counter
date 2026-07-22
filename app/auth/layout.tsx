@@ -1,6 +1,6 @@
 "use client";
 
-import { useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@/lib/contexts/theme";
 import { Moon, Sun } from "lucide-react";
 import { AlertCircle } from "lucide-react";
 

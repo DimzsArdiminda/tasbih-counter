@@ -2,7 +2,7 @@
 
 import React, { useState, Suspense } from "react";
 import { Lock, Eye, EyeOff } from "lucide-react";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@/lib/contexts/theme";
 import { useRouter, useSearchParams } from "next/navigation";
 import AlertError from "@/components/ui/error";
 import AlertSuccess from "@/components/ui/success";

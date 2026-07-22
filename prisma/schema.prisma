@@ -124,3 +124,133 @@ model DzikirHistory {
 
   @@index([userId, createdAt])
 }
+
+enum statusKitab {
+  sahih
+  hasan
+  dhaif
+}
+model periawayat {
+  id      String @id
+  nama_kitab   String
+  status  statusKitab @default(sahih) 
+  createdAt DateTime @default(now())
+
+
+  kitab musnad_darimi[]
+  kitabA musnad_ahmad[]
+  kitabS musnad_syafii[]
+  kitabM muwatoh_malik[]
+  kitabRA riyadhus_shalihin_arab[]
+  kitabRS riyadhus_shalihin[]
+  kitabB sahih_bukhori[]
+  kitabMM sahih_muslim[]
+  kitabAA sunan_abu_daud[]
+  kitabIM sunan_ibnu_majah[]
+  kitabSN sunan_nasai[]
+  kitabST sunan_tirmidzi[]
+}
+
+model musnad_darimi{
+  id String @id
+  kitabId String 
+  arab String @db.Text
+  terjemah String @db.Text
+
+  kitab periawayat @relation(fields: [kitabId], references: [id], onDelete: Cascade)
+}
+
+model musnad_ahmad{
+  id String @id
+  kitabId String 
+  arab String @db.Text
+  terjemah String @db.Text
+
+  kitabA periawayat @relation(fields: [kitabId], references: [id], onDelete: Cascade)
+}
+
+model musnad_syafii{
+  id String @id
+  kitabId String 
+  arab String @db.Text
+  terjemah String @db.Text
+
+  kitabS periawayat @relation(fields: [kitabId], references: [id], onDelete: Cascade)
+}
+
+model muwatoh_malik{
+  id String @id
+  kitabId String 
+  arab String @db.Text
+  terjemah String @db.Text
+
+  kitabM periawayat @relation(fields: [kitabId], references: [id], onDelete: Cascade)
+}
+model riyadhus_shalihin_arab{
+  id String @id
+  kitabId String 
+  arab String @db.Text
+  terjemah String @db.Text
+
+  kitabRA periawayat @relation(fields: [kitabId], references: [id], onDelete: Cascade)
+}
+model riyadhus_shalihin{
+  id String @id
+  kitabId String 
+  arab String @db.Text
+  terjemah String @db.Text
+
+  kitabRS periawayat @relation(fields: [kitabId], references: [id], onDelete: Cascade)
+}
+
+model sahih_bukhori{
+  id String @id
+  kitabId String 
+  arab String @db.Text
+  terjemah String @db.Text
+
+  kitabB periawayat @relation(fields: [kitabId], references: [id], onDelete: Cascade)
+}
+
+model sahih_muslim{
+  id String @id
+  kitabId String 
+  arab String @db.Text
+  terjemah String @db.Text
+
+  kitabMM periawayat @relation(fields: [kitabId], references: [id], onDelete: Cascade)
+}
+
+model sunan_abu_daud{
+  id String @id
+  kitabId String 
+  arab String @db.Text
+  terjemah String @db.Text
+
+  kitabAA periawayat @relation(fields: [kitabId], references: [id], onDelete: Cascade)
+}
+model sunan_ibnu_majah{
+  id String @id
+  kitabId String 
+  arab String @db.Text
+  terjemah String @db.Text
+
+  kitabIM periawayat @relation(fields: [kitabId], references: [id], onDelete: Cascade)
+}
+model sunan_nasai{
+  id String @id
+  kitabId String 
+  arab String @db.Text
+  terjemah String @db.Text
+
+  kitabSN periawayat @relation(fields: [kitabId], references: [id], onDelete: Cascade)
+}
+
+model sunan_tirmidzi{
+  id String @id
+  kitabId String 
+  arab String @db.Text
+  terjemah String @db.Text
+
+  kitabST periawayat @relation(fields: [kitabId], references: [id], onDelete: Cascade)
+}

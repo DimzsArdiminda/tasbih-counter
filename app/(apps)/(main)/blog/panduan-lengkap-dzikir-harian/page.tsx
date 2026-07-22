@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@/lib/contexts/theme";
 import { ArrowLeft, BookOpen, Heart, Clock } from "lucide-react";
 
 export default function PanduanDzikirHarianPage() {

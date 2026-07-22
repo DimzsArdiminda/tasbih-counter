@@ -1,6 +1,6 @@
 "use server";
 
-import { RegisterSchema } from "@/app/schemas/register";
+import { RegisterSchema } from "@/server/validations/register";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
