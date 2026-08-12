@@ -56,7 +56,7 @@ export default function HaditsBrowser({ kitabList }: { kitabList: Kitab[] }) {
                   <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${statusStyle[kitab.status]}`}>{statusLabel[kitab.status]}</span>
                 </div>
                 <div className="mt-5 flex items-end justify-between gap-3">
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">{kitab.nama_kitab}</h2>
+                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">{kitab.nama_kitab}.text</h2>
                   <ChevronRight className="shrink-0 text-gray-400 transition-transform group-hover:translate-x-1" size={20} />
                 </div>
               </button>

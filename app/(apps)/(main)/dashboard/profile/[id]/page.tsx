@@ -6,8 +6,8 @@ import { useParams, useRouter } from "next/navigation";
 import Loading from "@/components/ui/loading";
 import AlertError from "@/components/ui/error";
 import { useTheme } from "@/lib/contexts/theme";
-import CardPassword from "@/features/Profile/CardPassword";
-import CardInfo from "@/features/Profile/CardInfo";
+import CardPassword from "@/privcomp/Profile/CardPassword";
+import CardInfo from "@/privcomp/Profile/CardInfo";
 
 
 interface Profile {

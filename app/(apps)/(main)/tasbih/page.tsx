@@ -1,574 +1,53 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import React from "react";
 import { useTheme } from "@/lib/contexts/theme";
-import { useAlert } from "@/hooks/useAlert";
-import DhikrCard from "@/features/tasbih/components/DhikrCard";
-import CounterDisplay from "@/features/tasbih/components/CounterDisplay";
-import HistoryCard from "@/features/tasbih/components/HistoryCard";
-import SettingsToggle from "@/features/tasbih/components/SettingsToggle";
-import CustomDhikrModal from "@/features/tasbih/components/CustomDhikrModal";
-import TargetSelection from "@/features/tasbih/components/TargetSelection";
-import TipsSelection from "@/features/tasbih/components/TipsSelection";
-import { useRouter } from "next/navigation";
-
-interface DhikrRecord {
-  id: string;
-  dhikrName: string;
-  count: number;
-  target: number;
-  date: string;
-  completed: boolean;
-}
-
-interface DhikrPreset {
-  id?: string;
-  name: string;
-  arabic: string;
-  translation: string;
-  targetDefault: number;
-  userId?: string;
-}
-
-interface CustomTarget {
-  id?: string;
-  target: number;
-  userId?: string;
-}
-
-// const targetOptions = [33, 99, 100, 2000];
+import DhikrCard from "@/privcomp/tasbih/components/DhikrCard";
+import CounterDisplay from "@/privcomp/tasbih/components/CounterDisplay";
+import HistoryCard from "@/privcomp/tasbih/components/HistoryCard";
+import SettingsToggle from "@/privcomp/tasbih/components/SettingsToggle";
+import CustomDhikrModal from "@/privcomp/tasbih/components/CustomDhikrModal";
+import TargetSelection from "@/privcomp/tasbih/components/TargetSelection";
+import TipsSelection from "@/privcomp/tasbih/components/TipsSelection";
+import { useTasbih } from "@/services/dzikir/useTasbih";
 
 export default function TasbihPage() {
   const { isDark } = useTheme();
-  const { data: session } = useSession();
-  const { success, error, confirm } = useAlert();
-  const [count, setCount] = useState(0);
-  const [allDhikrs, setAllDhikrs] = useState<DhikrPreset[]>([]);
-  const [dzikirById, setDzikirById] = useState<DhikrPreset[]>([]);
-  const [selectedDhikr, setSelectedDhikr] = useState<DhikrPreset | null>(null);
-  const [target, setTarget] = useState<number>(33);
-  const [targetById, setTargetById] = useState<CustomTarget | null>(null);
-  const [allTarget, setAllTarget] = useState<CustomTarget[]>([]);
-  const [customTarget, setCustomTarget] = useState("");
-  const [showCustomInput, setShowCustomInput] = useState(false);
-  const [records, setRecords] = useState<DhikrRecord[]>([]);
-  const [showHistory, setShowHistory] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [vibrationEnabled, setVibrationEnabled] = useState(true);
-  const [animate, setAnimate] = useState(false);
-  const [showCustomDhikrModal, setShowCustomDhikrModal] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"all" | "custom">("all");
-  const router = useRouter();
-
-  // add some custom dzikir
-  const handleAddCustomDhikr = async (
-    name: string,
-    arabic: string,
-    translation: string,
-    targetDefault: number,
-  ) => {
-    if (!session?.user?.id) {
-      throw new Error("Anda harus login terlebih dahulu");
-    }
-
-    try {
-      const response = await fetch("/api/dzikir/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          arabic,
-          translation,
-          targetDefault,
-          userId: session.user.id,
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Gagal menambahkan dzikir");
-      }
-
-      const newDzikir = await response.json();
-      const newDhikr: DhikrPreset = {
-        id: newDzikir.id,
-        name: newDzikir.name,
-        arabic: newDzikir.arabic,
-        translation: newDzikir.translation,
-        targetDefault: newDzikir.targetDefault,
-        userId: session?.user?.id,
-      };
-
-      setAllDhikrs((prev) => [...prev, newDhikr]);
-      router.refresh();
-    } catch (error) {
-      console.error("Error adding custom dzikir:", error);
-      throw error;
-    }
-  };
-
-  // get target by user id
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!session?.user?.id) return;
-
-      try {
-        const response = await fetch("/api/dzikir/targetcount/byid");
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch user dzikir");
-        }
-
-        const data = await response.json();
-
-        if (Array.isArray(data) && data.length > 0) {
-          setTargetById({
-            id: data[0].id,
-            target: data[0].target,
-            userId: data[0].userId,
-          });
-        } else {
-          setTargetById(null);
-        }
-      } catch (error) {
-        console.error("Error fetching user dzikir:", error);
-        setTargetById(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [session?.user?.id]);
-
-  // add some target
-  const handleAddCustomTarget = async (target: number) => {
-    if (!session?.user?.id) {
-      throw new Error("Anda harus login terlebih dahulu");
-    }
-
-    try {
-      const response = await fetch("/api/dzikir/targetcount/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          target,
-          userId: session.user.id,
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Gagal menambahkan target");
-      }
-
-      const newTarget = await response.json();
-      const newCustomTarget: CustomTarget = {
-        id: newTarget.id,
-        target: newTarget.target,
-        userId: session?.user?.id,
-      };
-
-      setAllTarget((prev) => [...prev, newCustomTarget]);
-      setTarget(newCustomTarget.target);
-      router.refresh();
-    } catch (error) {
-      console.error("Error adding custom dzikir:", error);
-      throw error;
-    }
-  };
-
-  // get all target
-  useEffect(() => {
-    const fetchAllTarget = async () => {
-      try {
-        const response = await fetch("/api/dzikir/targetcount/all");
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch target");
-        }
-
-        const data = await response.json();
-
-        if (!Array.isArray(data)) {
-          console.error("Data is not an array:", data);
-          setTarget(33);
-          return;
-        }
-
-        const apiTarget: CustomTarget[] = data.map((d: CustomTarget) => ({
-          id: d.id,
-          target: d.target,
-          userId: d.userId,
-        }));
-
-        // save all target
-        setAllTarget(apiTarget);
-
-        // set target default
-        if (apiTarget.length > 0) {
-          setTarget(apiTarget[0].target);
-        }
-      } catch (error) {
-        console.error("Error fetching target:", error);
-        setTarget(33);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchAllTarget();
-  }, []);
-
-  // get all dzikir
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("/api/dzikir/all");
-        if (!response.ok) {
-          throw new Error("Failed to fetch dzikir");
-        }
-        const data = await response.json();
-
-        if (!Array.isArray(data)) {
-          console.error("Data is not an array:", data);
-          setAllDhikrs([]);
-          return;
-        }
-
-        const apiDhikrs: DhikrPreset[] = data.map((d: DhikrPreset) => ({
-          id: d.id,
-          name: d.name,
-          arabic: d.arabic,
-          translation: d.translation,
-          targetDefault: d.targetDefault,
-          userId: d.userId,
-        }));
-
-        setAllDhikrs(apiDhikrs);
-
-        if (apiDhikrs.length > 0) {
-          setSelectedDhikr(apiDhikrs[0]);
-          setTarget(apiDhikrs[0].targetDefault);
-        }
-      } catch (error) {
-        console.error("Error fetching dzikir:", error);
-        setAllDhikrs([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  // get dzikir by user id
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!session?.user?.id) return;
-
-      try {
-        const response = await fetch("/api/dzikir/byid");
-        if (!response.ok) {
-          throw new Error("Failed to fetch user dzikir");
-        }
-        const data = await response.json();
-
-        if (!Array.isArray(data)) {
-          console.error("Data is not an array:", data);
-          setDzikirById([]);
-          return;
-        }
-
-        const apiDhikrs: DhikrPreset[] = data.map((d: DhikrPreset) => ({
-          id: d.id,
-          name: d.name,
-          arabic: d.arabic,
-          translation: d.translation,
-          targetDefault: d.targetDefault,
-          userId: d.userId,
-        }));
-
-        setDzikirById(apiDhikrs);
-      } catch (error) {
-        console.error("Error fetching user dzikir:", error);
-        setDzikirById([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, [session?.user?.id]);
-
-  useEffect(() => {
-    const fetchHistory = async () => {
-      if (!session?.user?.id) {
-        setRecords([]);
-        return;
-      }
-
-      try {
-        const response = await fetch("/api/dzikir/history");
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch dzikir history");
-        }
-
-        const data = await response.json();
-
-        if (!Array.isArray(data)) {
-          console.error("History data is not an array:", data);
-          setRecords([]);
-          return;
-        }
-
-        setRecords(data);
-      } catch (error) {
-        console.error("Error fetching dzikir history:", error);
-        setRecords([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchHistory();
-  }, [session?.user?.id]);
-
-  const playSound = () => {
-    if (soundEnabled) {
-      const audio = new Audio(
-        "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiToIGGS56+iYSgoSVKzn8LJnHgU7k9r0yH8yBSh+zPLaizsIG2S45+iVSQoRU6vn8LJnHgU7lNr0yH8yBSh+zPLaizsIG2S45+iVSQoRU6vn8LJnHgU7lNr0yH8yBSh+zPLaizsIG2S45+iVSQoRU6vn8LJnHgU7lNr0yH8yBSh+zPLaizsIG2S45+iVSQoRU6vn8LJnHgU7lNr0",
-      );
-      audio.play().catch(() => {});
-    }
-  };
-
-  const vibrate = () => {
-    if (vibrationEnabled && navigator.vibrate) {
-      navigator.vibrate(200);
-    }
-  };
-
-  const handleIncrement = () => {
-    if (!selectedDhikr) return;
-
-    setCount((prev) => prev + 1);
-    setAnimate(true);
-    setTimeout(() => setAnimate(false), 200);
-    playSound();
-    vibrate();
-
-    if (count + 1 === target) {
-      // Save completed record
-      void saveRecord(true).catch((err) => {
-        console.error("Error saving completed dzikir history:", err);
-      });
-      // Show completion message
-      setTimeout(() => {
-        success(
-          "Alhamdulillah!",
-          `Anda telah menyelesaikan ${target}x ${selectedDhikr.name}`,
-        );
-      }, 100);
-    }
-  };
-
-  const handleReset = () => {
-    if (count > 0) {
-      confirm(
-        "Reset Dzikir?",
-        "Apakah Anda ingin menyimpan progress ini sebelum reset?",
-      ).then((result) => {
-        if (result.isConfirmed) {
-          void saveRecord(false).catch((err) => {
-            console.error("Error saving reset dzikir history:", err);
-          });
-        }
-        setCount(0);
-      });
-    } else {
-      setCount(0);
-    }
-  };
-
-  const saveRecord = async (completed: boolean) => {
-    if (!selectedDhikr) return;
-
-    if (!session?.user?.id) {
-      throw new Error("Anda harus login terlebih dahulu");
-    }
-
-    const payload = {
-      dhikrName: selectedDhikr.name,
-      count: completed ? target : count,
-      target,
-      completed,
-    };
-
-    try {
-      const response = await fetch("/api/dzikir/history", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(
-          errorData?.message || errorData?.error || "Gagal menyimpan history",
-        );
-      }
-
-      const created = await response.json();
-
-      const newRecord: DhikrRecord = {
-        id: created.id,
-        dhikrName: created.dhikrName,
-        count: created.count,
-        target: created.target,
-        date: created.date,
-        completed: created.completed,
-      };
-
-      setRecords((prev) => [newRecord, ...prev].slice(0, 50));
-    } catch (error) {
-      console.error("Error saving dzikir history:", error);
-      throw error;
-    }
-  };
-
-  const deleteRecord = (id: string) => {
-    fetch(`/api/dzikir/history/${id}`, {
-      method: "DELETE",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          return response.json().then((data) => {
-            throw new Error(
-              data?.message || data?.error || "Gagal menghapus history",
-            );
-          });
-        }
-
-        setRecords((prev) => prev.filter((record) => record.id !== id));
-      })
-      .catch((err) => {
-        console.error("Error deleting dzikir history:", err);
-        error(
-          "Terjadi Kesalahan",
-          "Gagal menghapus history. Silakan coba lagi",
-        );
-      });
-  };
-
-  const clearAllRecords = () => {
-    confirm("Hapus Semua History?", "Tindakan ini tidak dapat dibatalkan").then(
-      async (result) => {
-        if (!result.isConfirmed) return;
-
-        try {
-          const response = await fetch("/api/dzikir/history/clear", {
-            method: "DELETE",
-          });
-
-          if (!response.ok) {
-            const data = await response.json().catch(() => null);
-            throw new Error(
-              data?.message || data?.error || "Gagal menghapus semua history",
-            );
-          }
-
-          setRecords([]);
-          success("Berhasil", "Semua history telah dihapus");
-        } catch (err) {
-          console.error("Error clearing dzikir history:", err);
-          error(
-            "Terjadi Kesalahan",
-            "Gagal menghapus semua history. Silakan coba lagi",
-          );
-        }
-      },
-    );
-  };
-
-  const handleDhikrChange = (preset: DhikrPreset) => {
-    setSelectedDhikr(preset);
-    setTarget(preset.targetDefault);
-    setCount(0);
-  };
-
-  const handleTargetChange = (newTarget: number) => {
-    setTarget(newTarget);
-    setShowCustomInput(false);
-    if (count > newTarget) {
-      setCount(0);
-    }
-  };
-
-  const deleteDzikir = async (id: string | undefined) => {
-    if (!id) return;
-
-    try {
-      const response = await fetch(`/api/dzikir/byid/delete/${id}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        setDzikirById((prev) => prev.filter((d) => d.id !== id));
-        setAllDhikrs((prev) => prev.filter((d) => d.id !== id));
-        success("Berhasil", "Dzikir berhasil dihapus");
-      } else {
-        const errorData = await response.json();
-        error("Gagal Menghapus", errorData.message);
-      }
-    } catch (err) {
-      console.error("Error deleting dzikir:", err);
-      error("Terjadi Kesalahan", "Gagal menghapus dzikir. Silakan coba lagi");
-    }
-  };
-
-  const handleDeleteCustomTarget = async (id: string | undefined) => {
-    if (!id) {
-      console.warn("Delete called without target id");
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/dzikir/targetcount/delete/${id}`, {
-        method: "DELETE",
-      });
-
-      const data = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        throw new Error(
-          data?.message || data?.error || "Gagal menghapus target",
-        );
-      }
-
-      // remove from all targets
-      setAllTarget((prev) => prev.filter((t: CustomTarget) => t.id !== id));
-      if (targetById?.id === id) {
-        setTargetById(null);
-      }
-
-      success("Berhasil", "Target custom berhasil dihapus");
-    } catch (err) {
-      console.error("Error deleting custom target:", err);
-
-      error(
-        "Terjadi Kesalahan",
-        err instanceof Error ? err.message : "Gagal menghapus target custom",
-      );
-    }
-  };
+  const {
+    session,
+    count,
+    allDhikrs,
+    dzikirById,
+    selectedDhikr,
+    target,
+    allTarget,
+    customTarget,
+    showCustomInput,
+    records,
+    showHistory,
+    soundEnabled,
+    vibrationEnabled,
+    animate,
+    showCustomDhikrModal,
+    activeTab,
+    setCustomTarget,
+    setShowCustomInput,
+    setShowHistory,
+    setSoundEnabled,
+    setVibrationEnabled,
+    setShowCustomDhikrModal,
+    setActiveTab,
+    handleIncrement,
+    handleReset,
+    handleDhikrChange,
+    handleTargetChange,
+    handleAddCustomDhikr,
+    handleAddCustomTarget,
+    handleDeleteRecord,
+    handleClearAllRecords,
+    handleDeleteDzikir,
+    handleDeleteCustomTarget,
+  } = useTasbih();
 
   return (
     <div
@@ -606,7 +85,7 @@ export default function TasbihPage() {
           onTabChange={setActiveTab}
           onDhikrChange={handleDhikrChange}
           onShowCustomModal={setShowCustomDhikrModal}
-          onDeleteDzikir={deleteDzikir}
+          onDeleteDzikir={handleDeleteDzikir}
         />
 
         {/* Custom Dhikr Modal */}
@@ -639,8 +118,8 @@ export default function TasbihPage() {
           <HistoryCard
             records={records}
             isDark={isDark}
-            onDelete={deleteRecord}
-            onClearAll={clearAllRecords}
+            onDelete={handleDeleteRecord}
+            onClearAll={handleClearAllRecords}
           />
         )}
 
