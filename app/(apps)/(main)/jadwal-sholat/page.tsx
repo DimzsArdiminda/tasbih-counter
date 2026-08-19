@@ -1,85 +1,25 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+
 import Link from "next/link";
 import { Loader2, MapPin, ChevronRight } from "lucide-react";
 import { useTheme } from "@/lib/contexts/theme";
-import { KabupatanKota } from "@/types/jadwal-solat";
+import { useSolat } from "@/services/sholat/useSolat";
+
 
 export default function JadwalSholat() {
   const { isDark } = useTheme();
-  const [allCities, setAllCities] = useState<KabupatanKota[]>([]);
-  const [displayedCities, setDisplayedCities] = useState<KabupatanKota[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searching, setSearching] = useState(false);
-  const [error, setError] = useState<string>("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Fetch all cities on component mount
-  useEffect(() => {
-    fetchAllCities();
-  }, []);
+  const {
+    allCities,
+    loading,
+    error,
+    searching,
+    searchTerm,
+    handleSearch,
+  } = useSolat();
 
-  const fetchAllCities = async () => {
-    try {
-      const response = await fetch("/api/cities");
-      if (!response.ok) throw new Error("Gagal mengambil data kota");
-      const data = await response.json();
-      if (data.data && Array.isArray(data.data)) {
-        setAllCities(data.data);
-        setDisplayedCities(data.data);
-      }
-    } catch (err) {
-      setError("Gagal mengambil data kota");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Debounced search function
-  const handleSearch = useCallback(
-    (query: string) => {
-      setSearchTerm(query);
-
-      // Clear previous timeout
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-
-      if (query.trim() === "") {
-        setDisplayedCities(allCities);
-        setSearching(false);
-        return;
-      }
-
-      setSearching(true);
-
-      // Debounce search request
-      searchTimeoutRef.current = setTimeout(async () => {
-        try {
-          const response = await fetch(
-            `/api/cities/search?q=${encodeURIComponent(query.trim())}`,
-          );
-          if (!response.ok) throw new Error("Gagal mencari kota");
-          const data = await response.json();
-          if (data.data && Array.isArray(data.data)) {
-            setDisplayedCities(data.data);
-          } else {
-            setDisplayedCities([]);
-          }
-        } catch (err) {
-          console.error("Search error:", err);
-          setDisplayedCities([]);
-        } finally {
-          setSearching(false);
-        }
-      }, 300); // 300ms debounce
-    },
-    [allCities],
-  );
-
+ 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-100">
@@ -133,7 +73,7 @@ export default function JadwalSholat() {
       {/* Cities List */}
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-          {displayedCities.map((city) => (
+          {allCities.map((city) => (
             <Link
               key={city.id}
               href={`/jadwal-sholat/${city.id}`}
@@ -163,7 +103,7 @@ export default function JadwalSholat() {
         </div>
       </div>
 
-      {displayedCities.length === 0 && !searching && (
+      {allCities.length === 0 && !searching && (
         <div className="text-center py-12">
           <p className={`${isDark ? "text-gray-400" : "text-gray-500"}`}>
             {searchTerm ? "Tidak ada kota yang cocok" : "Tidak ada data kota"}

@@ -12,6 +12,9 @@ export const api = axios.create({
 });
 
 export const endpoint = {
+    sholat : {
+        fetchAllCities: () => api.get("/cities"),
+    },
     dzikir: {
         // Dzikir presets
         fetchAll: () => api.get("/dzikir/all"),
