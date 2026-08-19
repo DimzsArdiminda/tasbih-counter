@@ -2,6 +2,20 @@ import { endpoint } from "../api/api";
 import type { KabupatanKota } from "./interface/interface";
 
 
+export const searchData = async (query: string) => {
+    try{
+        const response = await endpoint.sholat.searchCities(query);
+        if(!response.data || !Array.isArray(response.data.data)){
+            console.error("Invalid response data:", response.data);
+            return [];
+        }
+        return response.data.data;
+    }catch(error){
+        console.error('Error searching cities:', error);
+        return [];
+    }
+}
+
 export const fetchAllCities = async () : Promise<KabupatanKota[]> => {
     try{
         const response = await endpoint.sholat.fetchAllCities();
@@ -10,12 +24,6 @@ export const fetchAllCities = async () : Promise<KabupatanKota[]> => {
             console.error("Data is not an array:", response.data);
             return [];
         }
-        // console.log("Fetched cities:", getFetch); // Log the fetched data for debugging
-            // const data = getFetch.map((c: KabupatanKota) => ({
-            //     id: c.id,
-            //     lokasi: c.lokasi,
-            // }));
-
         return getFetch;
     }catch(error) {
         console.error('Error fetching all cities:', error);

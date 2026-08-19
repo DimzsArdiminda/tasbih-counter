@@ -2,9 +2,10 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { KabupatanKota } from "./interface/interface";
-import { fetchAllCities } from "./handler";
+import { fetchAllCities, searchData } from "./handler";
 
 export function useSolat() {
+    const [originalCities, setOriginalCities] = useState<KabupatanKota[]>([]);
     const [allCities, setAllCities] = useState<KabupatanKota[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>("");
@@ -15,55 +16,44 @@ export function useSolat() {
     useEffect(() => {
         fetchAllCities()
         .then((cities) => {
-            setAllCities(cities);
+            setOriginalCities(cities);
+            setAllCities(cities); 
+        })
+        .catch((err) => {
+            setError(err instanceof Error ? err.message : "Terjadi kesalahan");
         })
         .finally(() => {
             setLoading(false);
         });
     }, []);
 
-    useEffect(() => {}, [allCities]);
-
-  // Debounced search function
+    
     const handleSearch = useCallback(
-        (query: string) => {
+    (query: string) => {
         setSearchTerm(query);
 
-        // Clear previous timeout
         if (searchTimeoutRef.current) {
             clearTimeout(searchTimeoutRef.current);
         }
 
         if (query.trim() === "") {
-            setAllCities(allCities);
+            setAllCities(originalCities);
             setSearching(false);
             return;
         }
 
         setSearching(true);
 
-        // Debounce search request
+
         searchTimeoutRef.current = setTimeout(async () => {
-            try {
-            const response = await fetch(
-                `/api/cities/search?q=${encodeURIComponent(query.trim())}`,
-            );
-            if (!response.ok) throw new Error("Gagal mencari kota");
-            const data = await response.json();
-            if (data.data && Array.isArray(data.data)) {
-                setAllCities(data.data);
-            } else {
-                setAllCities([]);
-            }
-            } catch (err) {
-            console.error("Search error:", err);
-            setAllCities([]);
-            } finally {
+
+            const results = await searchData(query);
+
+            setAllCities(results);
             setSearching(false);
-            }
-        }, 300); // 300ms debounce
-        },
-        [allCities],
+        }, 300);
+    },
+    [originalCities], 
     );
 
     return {

@@ -14,6 +14,7 @@ export const api = axios.create({
 export const endpoint = {
     sholat : {
         fetchAllCities: () => api.get("/cities"),
+        searchCities: (query: string) => api.get(`/cities/search?q=${encodeURIComponent(query)}`),
     },
     dzikir: {
         // Dzikir presets
