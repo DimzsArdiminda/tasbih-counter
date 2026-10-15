@@ -47,10 +47,29 @@ export function useSolat() {
 
         searchTimeoutRef.current = setTimeout(async () => {
 
-            const results = await searchData(query);
+            try {
+              const results = await searchData(query);
 
-            setAllCities(results);
-            setSearching(false);
+              
+              if (Array.isArray(results)) {
+                setAllCities(results);
+              } else {
+                console.error("Gagal melakukan pencarian:", results.message);
+                setAllCities([]); 
+              }
+            } catch (error) {
+              console.error(
+                "Terjadi kesalahan pada jaringan atau server:",
+                error,
+              );
+              setAllCities([]);
+            } finally {
+              setSearching(false);
+            }
+
+
+            // setAllCities(results);
+            // setSearching(false);
         }, 300);
     },
     [originalCities], 

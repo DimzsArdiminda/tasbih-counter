@@ -23,7 +23,6 @@ export async function GET(
     const cached = await redis.get(cacheKey);
 
     if (cached) {
-      // console.log(" Cache Hit");
       return NextResponse.json(cached);
     }
 
@@ -53,6 +52,7 @@ export async function GET(
       ex: 600, // 10 menit
     });
 
+    
     return NextResponse.json(profile);
   } catch (error) {
     console.error(error);
