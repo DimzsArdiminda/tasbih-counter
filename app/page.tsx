@@ -173,10 +173,10 @@ export default function LandingPage() {
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { label: "Pengguna Aktif", value: "100K+", icon: Users },
+              { label: "Pengguna Aktif", value: "5+", icon: Users },
               { label: "Dzikir Tercatat", value: "10M+", icon: TrendingUp },
               { label: "Kota di Indonesia", value: "500+", icon: MapPin },
-              { label: "Rating Pengguna", value: "4.8/5", icon: Star },
+              // { label: "Rating Pengguna", value: "4.8/5", icon: Star },
             ].map((stat, index) => (
               <div
                 key={index}
