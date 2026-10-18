@@ -7,7 +7,7 @@ import type {
   KabupatanKota,
   JadwalResponse,
   JadwalKomponen,
-} from "@/types/jadwal-solat";
+} from "@/types/jadwal-solat-bku";
 
 interface HeroProps {
   isDark: boolean;

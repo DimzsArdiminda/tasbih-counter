@@ -7,7 +7,7 @@ import type {
   KabupatanKota,
   JadwalResponse,
   JadwalKomponen,
-} from "@/types/jadwal-solat";
+} from "@/types/jadwal-solat-bku";
 
 interface HeroProps {
   isDark: boolean;
@@ -40,7 +40,9 @@ export default function Hero({ isDark }: HeroProps) {
     );
 
     const data = await response.json();
-    const cityNorm = data.city.replace(/^(Kota|Kabupaten)\s+/i, "").toLowerCase();
+    const cityNorm = data.city
+      .replace(/^(Kota|Kabupaten)\s+/i, "")
+      .toLowerCase();
     return [cityNorm, data.city];
   };
 
@@ -58,10 +60,8 @@ export default function Hero({ isDark }: HeroProps) {
       if (!location) {
         throw new Error("Tidak dapat menemukan kota terdekat");
       }
-      
-      const searchResponse = await fetch(
-        `/api/cities/search?q=${location[0]}`,
-      );
+
+      const searchResponse = await fetch(`/api/cities/search?q=${location[0]}`);
 
       if (!searchResponse.ok) {
         throw new Error("Gagal mencari kota");
@@ -70,7 +70,9 @@ export default function Hero({ isDark }: HeroProps) {
       const searchData = await searchResponse.json();
       const searchCities: KabupatanKota[] = searchData.data || [];
 
-      const targetCity = location[1].toUpperCase().replace(/^Kabupaten/i, "KAB.")
+      const targetCity = location[1]
+        .toUpperCase()
+        .replace(/^Kabupaten/i, "KAB.")
         .replace(/^Kota/i, "KOTA");
 
       const selectedCity =
@@ -104,7 +106,7 @@ export default function Hero({ isDark }: HeroProps) {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     getCurrentLocationAndPrayerSchedule();
   }, []);
