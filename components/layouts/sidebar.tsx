@@ -42,6 +42,12 @@ const linkSidebar = [
     icon: MessagesSquare,
     section: "MVP Fiture",
   },
+  {
+      title: "Dzikir Pagi Petang",
+      link: "/pagi-petang",
+      icon: Sparkles,
+      section: "Common Fiture",
+    },
 ];
 
 export default function Sidebar({
