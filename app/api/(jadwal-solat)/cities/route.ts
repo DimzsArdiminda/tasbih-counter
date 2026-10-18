@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { KabkotaResponse } from "@/types/jadwal-solat";
+import { KabkotaResponse } from "@/types/jadwal-solat-bku";
 
 const MYQURAN_API_BASE = "https://api.myquran.com/v3/sholat";
 
